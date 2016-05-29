@@ -1,4 +1,8 @@
-import { INSERT } from './symbols';
+import {
+  INSERT,
+  HAS_ALL_KEYS,
+} from './symbols';
+import _ from 'lodash';
 import rethinkdb from 'rethinkdb';
 import rethinkdbInit from 'rethinkdb-init';
 rethinkdbInit(rethinkdb);
@@ -47,6 +51,16 @@ export default class DatabaseDriver {
         prodviderInfo,
         verified,
       },
+    });
+  }
+
+  [HAS_ALL_KEYS](expectedKeys, options) {
+    return new Promise((resolve, reject) => {
+      if (!_.isEmpty(_.xor(expectedKeys, _.keys(options)))) {
+        reject();
+      } else {
+        resolve();
+      }
     });
   }
 }
