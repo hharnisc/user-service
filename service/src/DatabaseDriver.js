@@ -34,7 +34,19 @@ export default class DatabaseDriver {
     });
   }
 
-  createUser() {
-
+  createUser(options = {}) {
+    const { email, provider, prodviderInfo, verified } = options;
+    const emails = [email];
+    const table = this.userTable;
+    return this[INSERT]({
+      table,
+      data: {
+        email,
+        emails,
+        provider,
+        prodviderInfo,
+        verified,
+      },
+    });
   }
 }

@@ -96,4 +96,25 @@ describe('DatabaseDriver', () => {
     const databaseDriver = new DatabaseDriver({ userTable });
     expect(databaseDriver.userTable).toBe(userTable);
   });
+
+  it('does create a new user', (done) => {
+    const email = 'test@test.com';
+    const provider = 'google';
+    const prodviderInfo = {
+      userId: 1234,
+      scope: ['email'],
+    };
+    const verified = true;
+    const databaseDriver = new DatabaseDriver();
+    const options = { email, provider, prodviderInfo, verified };
+    databaseDriver.createUser(options)
+      .then((result) => {
+        expect(rethinkdb.table).toBeCalledWith('users');
+        expect(rethinkdb.insert).toBeCalledWith(Object.assign({}, options, { emails: [email] }));
+        expect(rethinkdb.run).toBeCalledWith(databaseDriver.connection, jasmine.any(Function));
+        expect(result)
+          .toEqual('result');
+        done();
+      });
+  });
 });
