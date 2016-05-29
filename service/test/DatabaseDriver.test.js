@@ -84,11 +84,6 @@ describe('DatabaseDriver', () => {
     });
   });
 
-  it('does have a function to create new users', () => {
-    const databaseDriver = new DatabaseDriver();
-    expect(databaseDriver.createUser).toBeDefined();
-  });
-
   it('does set a default table for users', () => {
     const databaseDriver = new DatabaseDriver();
     expect(databaseDriver.userTable).toBe('users');
@@ -100,62 +95,71 @@ describe('DatabaseDriver', () => {
     expect(databaseDriver.userTable).toBe(userTable);
   });
 
-  pit('does create a new user', () => {
-    const email = 'test@test.com';
-    const provider = 'google';
-    const prodviderInfo = {
-      userId: 1234,
-      scope: ['email'],
-    };
-    const verified = true;
-    const databaseDriver = new DatabaseDriver();
-    const options = { email, provider, prodviderInfo, verified };
-    return databaseDriver.createUser(options)
-      .then((result) => {
-        expect(rethinkdb.table).toBeCalledWith('users');
-        expect(rethinkdb.insert).toBeCalledWith(Object.assign({}, options, { emails: [email] }));
-        expect(rethinkdb.run).toBeCalledWith(databaseDriver.connection, jasmine.any(Function));
-        expect(result)
-          .toEqual('result');
-      });
+  describe('createUser', () => {
+    it('does have a function to create new users', () => {
+      const databaseDriver = new DatabaseDriver();
+      expect(databaseDriver.createUser).toBeDefined();
+    });
+
+    pit('does create a new user', () => {
+      const email = 'test@test.com';
+      const provider = 'google';
+      const prodviderInfo = {
+        userId: 1234,
+        scope: ['email'],
+      };
+      const verified = true;
+      const databaseDriver = new DatabaseDriver();
+      const options = { email, provider, prodviderInfo, verified };
+      return databaseDriver.createUser(options)
+        .then((result) => {
+          expect(rethinkdb.table).toBeCalledWith('users');
+          expect(rethinkdb.insert).toBeCalledWith(Object.assign({}, options, { emails: [email] }));
+          expect(rethinkdb.run).toBeCalledWith(databaseDriver.connection, jasmine.any(Function));
+          expect(result)
+            .toEqual('result');
+        });
+    });
+
+    pit('does not create a user with missing options', () => {
+      const databaseDriver = new DatabaseDriver();
+      return databaseDriver.createUser({})
+        .then(() => {
+          throw new Error('This should have broken');
+        })
+        .catch((err) => {
+          expect(err)
+            .toBe('Expecting parameters: email, provider, prodviderInfo, verified');
+        });
+    });
   });
 
-  it('does hava a method to verify option keys', () => {
-    const databaseDriver = new DatabaseDriver();
-    expect(databaseDriver[HAS_ALL_KEYS])
-      .toBeDefined();
-  });
+  describe('[HAS_ALL_KEYS]', () => {
+    it('does hava a method to verify option keys', () => {
+      const databaseDriver = new DatabaseDriver();
+      expect(databaseDriver[HAS_ALL_KEYS])
+        .toBeDefined();
+    });
 
-  pit('does verify that option keys match expected keys', () => {
-    const expectedKeys = ['a'];
-    const options = { a: true };
-    const databaseDriver = new DatabaseDriver();
-    return databaseDriver[HAS_ALL_KEYS](expectedKeys, options);
-  });
+    pit('does verify that option keys match expected keys', () => {
+      const expectedKeys = ['a'];
+      const options = { a: true };
+      const databaseDriver = new DatabaseDriver();
+      return databaseDriver[HAS_ALL_KEYS](expectedKeys, options);
+    });
 
-  it('does detect that option keys missing', () => {
-    const expectedKeys = ['a'];
-    const options = { };
-    const databaseDriver = new DatabaseDriver();
-    return databaseDriver[HAS_ALL_KEYS](expectedKeys, options)
-      .then(() => {
-        throw new Error('This should have broken');
-      })
-      .catch((err) => {
-        expect(err)
-          .toBe('Expecting parameters: a');
-      });
-  });
-
-  pit('does not create a user with missing options', () => {
-    const databaseDriver = new DatabaseDriver();
-    return databaseDriver.createUser({})
-      .then(() => {
-        throw new Error('This should have broken');
-      })
-      .catch((err) => {
-        expect(err)
-          .toBe('Expecting parameters: email, provider, prodviderInfo, verified');
-      });
+    it('does detect that option keys missing', () => {
+      const expectedKeys = ['a'];
+      const options = { };
+      const databaseDriver = new DatabaseDriver();
+      return databaseDriver[HAS_ALL_KEYS](expectedKeys, options)
+        .then(() => {
+          throw new Error('This should have broken');
+        })
+        .catch((err) => {
+          expect(err)
+            .toBe('Expecting parameters: a');
+        });
+    });
   });
 });

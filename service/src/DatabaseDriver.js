@@ -38,6 +38,16 @@ export default class DatabaseDriver {
     });
   }
 
+  [HAS_ALL_KEYS](expectedKeys, options) {
+    return new Promise((resolve, reject) => {
+      if (!_.isEmpty(_.xor(expectedKeys, _.keys(options)))) {
+        reject(`Expecting parameters: ${expectedKeys.join(', ')}`);
+      } else {
+        resolve();
+      }
+    });
+  }
+
   createUser(options = {}) {
     return this[HAS_ALL_KEYS](
       ['email', 'provider', 'prodviderInfo', 'verified'],
@@ -58,15 +68,5 @@ export default class DatabaseDriver {
           },
         });
       });
-  }
-
-  [HAS_ALL_KEYS](expectedKeys, options) {
-    return new Promise((resolve, reject) => {
-      if (!_.isEmpty(_.xor(expectedKeys, _.keys(options)))) {
-        reject(`Expecting parameters: ${expectedKeys.join(', ')}`);
-      } else {
-        resolve();
-      }
-    });
   }
 }
