@@ -69,4 +69,8 @@ export default class DatabaseDriver {
         });
       });
   }
+
+  updateUser() {
+
+  }
 }

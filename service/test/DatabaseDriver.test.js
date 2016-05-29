@@ -162,4 +162,12 @@ describe('DatabaseDriver', () => {
         });
     });
   });
+
+  describe('updateUser', () => {
+    it('does exist', () => {
+      const databaseDriver = new DatabaseDriver();
+      expect(databaseDriver.updateUser)
+        .toBeDefined();
+    });
+  });
 });
