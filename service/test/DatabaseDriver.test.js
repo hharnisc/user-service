@@ -85,4 +85,15 @@ describe('DatabaseDriver', () => {
     const databaseDriver = new DatabaseDriver();
     expect(databaseDriver.createUser).toBeDefined();
   });
+
+  it('does set a default table for users', () => {
+    const databaseDriver = new DatabaseDriver();
+    expect(databaseDriver.userTable).toBe('users');
+  });
+
+  it('does allow user table name to be configured', () => {
+    const userTable = 'otherUserTable';
+    const databaseDriver = new DatabaseDriver({ userTable });
+    expect(databaseDriver.userTable).toBe(userTable);
+  });
 });

@@ -7,6 +7,7 @@ export default class DatabaseDriver {
   constructor(options = {}) {
     this.config = options.config;
     this.tableConfig = options.tableConfig;
+    this.userTable = options.userTable || 'users';
   }
 
   init() {
