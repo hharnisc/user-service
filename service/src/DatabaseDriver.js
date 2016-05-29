@@ -32,4 +32,8 @@ export default class DatabaseDriver {
         });
     });
   }
+
+  createUser() {
+
+  }
 }

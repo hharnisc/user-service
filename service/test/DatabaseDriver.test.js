@@ -80,4 +80,9 @@ describe('DatabaseDriver', () => {
       done();
     });
   });
+
+  it('does have a function to create new users', () => {
+    const databaseDriver = new DatabaseDriver();
+    expect(databaseDriver.createUser).toBeDefined();
+  });
 });
