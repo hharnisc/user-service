@@ -23,4 +23,41 @@ describe('DatabaseDriver', () => {
       done();
     });
   });
+
+  it('does handle database connection errors', (done) => {
+    const rethinkdbConfig = {
+      config: {
+        host: 'badhost',
+        port: 28015,
+      },
+    };
+    const databaseDriver = new DatabaseDriver(rethinkdbConfig);
+    databaseDriver.init()
+    .then(() => {
+      throw new Error('Expecting connection to be invalid');
+    })
+    .catch((err) => {
+      expect(err).toBe('bad host detected');
+      done();
+    });
+  });
+
+  it('does init db with tables and indexes', (done) => {
+    const rethinkdbConfig = {
+      config: {
+        host: 'localhost',
+        port: 28015,
+        db: 'someDb',
+      },
+      tableConfig: [
+        'a',
+        'b',
+      ],
+    };
+    const databaseDriver = new DatabaseDriver(rethinkdbConfig);
+    databaseDriver.init().then(() => {
+      expect(rethinkdb.init).toBeCalledWith(rethinkdbConfig.config, rethinkdbConfig.tableConfig);
+      done();
+    });
+  });
 });
