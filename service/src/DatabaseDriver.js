@@ -39,25 +39,31 @@ export default class DatabaseDriver {
   }
 
   createUser(options = {}) {
-    const { email, provider, prodviderInfo, verified } = options;
-    const emails = [email];
-    const table = this.userTable;
-    return this[INSERT]({
-      table,
-      data: {
-        email,
-        emails,
-        provider,
-        prodviderInfo,
-        verified,
-      },
-    });
+    return this[HAS_ALL_KEYS](
+      ['email', 'provider', 'prodviderInfo', 'verified'],
+      options
+    )
+      .then(() => {
+        const { email, provider, prodviderInfo, verified } = options;
+        const emails = [email];
+        const table = this.userTable;
+        return this[INSERT]({
+          table,
+          data: {
+            email,
+            emails,
+            provider,
+            prodviderInfo,
+            verified,
+          },
+        });
+      });
   }
 
   [HAS_ALL_KEYS](expectedKeys, options) {
     return new Promise((resolve, reject) => {
       if (!_.isEmpty(_.xor(expectedKeys, _.keys(options)))) {
-        reject();
+        reject(`Expecting parameters: ${expectedKeys.join(', ')}`);
       } else {
         resolve();
       }

@@ -143,7 +143,19 @@ describe('DatabaseDriver', () => {
       })
       .catch((err) => {
         expect(err)
-          .not.toBeDefined();
+          .toBe('Expecting parameters: a');
+      });
+  });
+
+  pit('does not create a user with missing options', () => {
+    const databaseDriver = new DatabaseDriver();
+    return databaseDriver.createUser({})
+      .then(() => {
+        throw new Error('This should have broken');
+      })
+      .catch((err) => {
+        expect(err)
+          .toBe('Expecting parameters: email, provider, prodviderInfo, verified');
       });
   });
 });
