@@ -1,5 +1,7 @@
 # User
 
+**NOTE: this is a work in progress**
+
 A user management service
 
 ## Table Of Contents
@@ -9,6 +11,7 @@ A user management service
 - [Running Locally](#running-locally)
 - [Deploy Locally](#deploy-locally)
 - [Deploy To Production](#deploy-to-production)
+- [User Object](#user-object)
 - [API](#api)
 
 ## Quickstart
@@ -102,6 +105,22 @@ TODO - (mostly waiting on docker for mac and localkube to play nice)
 
 TODO
 
+## User Object
+
+```json
+{
+  "id": "1",
+  "email": "someone@xyz.com",
+  "emails": ["someoneelse@xyz.com", "someone@xyz.com"],
+  "providers": {
+    "google": {
+      /* google provider data*/
+    }
+  },
+  "roles": ["read", "write", "sudo"]
+}
+```
+
 ## API
 
 ### GET /health
@@ -114,16 +133,74 @@ No parameters
 
 #### response
 
-204 - Empty
+200 - Empty
 
-### GET /v1/thetime
+### POST /v1/addrole
 
-Get a unix timestamp
+Add a role to a user
 
 #### request
 
-No parameters
+- **role** - *string* - a feature or permission that is enabled for a user
+- **userId** - *string* - a user who is given the new role
 
 #### response
 
-- **time** - *unix timestamp* - current time
+200 - Empty
+
+
+### POST /v1/removerole
+
+remove a role from a user
+
+#### request
+
+- **role** - *string* - a feature or permission that is enabled for a user
+- **userId** - *string* - a user who is given the new role
+
+#### response
+
+200 - Empty
+
+### POST /v1/create
+
+Creates a new user with a given email address, provider (facebook, twitter, google etc) and if they've come from a verified source.
+
+#### request
+
+- **email** - *string* - email address
+- **provider** - *string* - the provider the user was authenticated against (facebook, twitter, google, etc)
+- **providerInfo** - *object* - the data received from the provider
+- **verified** - *boolean* - did the providerInfo come from a verified source?
+
+#### response
+
+- **user** - *object* - complete user object
+
+### POST /v1/update
+
+Updates a user with a userId.
+
+All feilds except `id` are optional.
+
+- `email` sets current email and appends to known emails if not seen yet
+- `provider` must be specified if `providerInfo` is set
+- `providerInfo` is merged onto the user `providers` field with the key specified in the `provider` input parameters. Much like using
+
+```js
+Object.assign(existing, updated)
+```
+
+- `verified` can be flipped between true/false
+
+#### request
+
+- **id** - *string* - user id to update
+- **email** - *string* - (optional) email address
+- **provider** - *string* - (optional) the provider the user was authenticated against (facebook, twitter, google, etc)
+- **providerInfo** - *object* - (optional) the data received from the provider
+- **verified** - *boolean* - (optional) did the providerInfo come from a verified source?
+
+#### response
+
+- **user** - *object* - complete user object
