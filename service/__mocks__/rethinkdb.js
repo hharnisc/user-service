@@ -14,4 +14,11 @@ rethinkdb.init = jest.fn().mockImplementation((config) =>
     }
   })
 );
+rethinkdb.run = jest.fn().mockImplementation((conn, cb) => {
+  cb(undefined, 'result');
+});
+rethinkdb.insert = jest.fn().mockImplementation(() => ({ run: rethinkdb.run }));
+rethinkdb.table = jest.fn().mockImplementation(() => ({
+  insert: rethinkdb.insert,
+}));
 module.exports = rethinkdb;

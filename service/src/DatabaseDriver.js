@@ -1,3 +1,4 @@
+import { INSERT } from './symbols';
 import rethinkdb from 'rethinkdb';
 import rethinkdbInit from 'rethinkdb-init';
 rethinkdbInit(rethinkdb);
@@ -14,5 +15,21 @@ export default class DatabaseDriver {
         this.connection = connection;
         this.connection.use(this.config.db);
       });
+  }
+
+  [INSERT](options = {}) {
+    const table = options.table;
+    const data = options.data;
+    return new Promise((resolve, reject) => {
+      rethinkdb.table(table)
+        .insert(data)
+        .run(this.connection, (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        });
+    });
   }
 }

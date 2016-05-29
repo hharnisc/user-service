@@ -1,6 +1,7 @@
 jest.unmock('../src/DatabaseDriver');
 jest.mock('rethinkdb');
 import DatabaseDriver from '../src/DatabaseDriver';
+import { INSERT } from '../src/symbols';
 import rethinkdb from 'rethinkdb';
 
 describe('DatabaseDriver', () => {
@@ -57,6 +58,25 @@ describe('DatabaseDriver', () => {
     const databaseDriver = new DatabaseDriver(rethinkdbConfig);
     databaseDriver.init().then(() => {
       expect(rethinkdb.init).toBeCalledWith(rethinkdbConfig.config, rethinkdbConfig.tableConfig);
+      done();
+    });
+  });
+
+  it('does have a private insert method', () => {
+    const databaseDriver = new DatabaseDriver();
+    expect(databaseDriver[INSERT]).toBeDefined();
+  });
+
+  it('does insert data into database', (done) => {
+    const databaseDriver = new DatabaseDriver();
+    const table = 'sessions';
+    const data = { someData: 'DATA!' };
+    const options = { table, data };
+    databaseDriver[INSERT](options).then((result) => {
+      expect(result).toBe('result');
+      expect(rethinkdb.table).toBeCalledWith(table);
+      expect(rethinkdb.insert).toBeCalledWith(data);
+      expect(rethinkdb.run).toBeCalledWith(databaseDriver.connection, jasmine.any(Function));
       done();
     });
   });
