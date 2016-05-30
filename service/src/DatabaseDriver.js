@@ -50,11 +50,11 @@ export default class DatabaseDriver {
 
   createUser(options = {}) {
     return this[HAS_ALL_KEYS](
-      ['email', 'provider', 'prodviderInfo', 'verified'],
+      ['email', 'provider', 'providerInfo', 'verified'],
       options
     )
       .then(() => {
-        const { email, provider, prodviderInfo, verified } = options;
+        const { email, provider, providerInfo, verified } = options;
         const emails = [email];
         const table = this.userTable;
         return this[INSERT]({
@@ -63,14 +63,25 @@ export default class DatabaseDriver {
             email,
             emails,
             provider,
-            prodviderInfo,
+            providerInfo,
             verified,
           },
         });
       });
   }
 
-  updateUser() {
-
+  updateUser(options = {}) {
+    const { userId, email, provider, providerInfo, verified } = options;
+    const providerData = {};
+    providerData[provider] = providerInfo;
+    return rethinkdb
+      .table(this.userTable)
+      .get(userId)
+      .update({
+        email,
+        emails: rethinkdb.row('emails').setInsert(email),
+        providers: rethinkdb.row('providers').merge(providerData),
+        verified,
+      }).run(this.connection);
   }
 }

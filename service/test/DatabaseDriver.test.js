@@ -104,13 +104,13 @@ describe('DatabaseDriver', () => {
     pit('does create a new user', () => {
       const email = 'test@test.com';
       const provider = 'google';
-      const prodviderInfo = {
+      const providerInfo = {
         userId: 1234,
         scope: ['email'],
       };
       const verified = true;
       const databaseDriver = new DatabaseDriver();
-      const options = { email, provider, prodviderInfo, verified };
+      const options = { email, provider, providerInfo, verified };
       return databaseDriver.createUser(options)
         .then((result) => {
           expect(rethinkdb.table).toBeCalledWith('users');
@@ -129,7 +129,7 @@ describe('DatabaseDriver', () => {
         })
         .catch((err) => {
           expect(err)
-            .toBe('Expecting parameters: email, provider, prodviderInfo, verified');
+            .toBe('Expecting parameters: email, provider, providerInfo, verified');
         });
     });
   });
@@ -150,7 +150,7 @@ describe('DatabaseDriver', () => {
 
     it('does detect that option keys missing', () => {
       const expectedKeys = ['a'];
-      const options = { };
+      const options = {};
       const databaseDriver = new DatabaseDriver();
       return databaseDriver[HAS_ALL_KEYS](expectedKeys, options)
         .then(() => {
@@ -168,6 +168,35 @@ describe('DatabaseDriver', () => {
       const databaseDriver = new DatabaseDriver();
       expect(databaseDriver.updateUser)
         .toBeDefined();
+    });
+
+    pit('does update A user', () => {
+      const userId = 1;
+      const email = 'test@test.com';
+      const provider = 'google';
+      const providerInfo = { scope: 'email' };
+      const verified = true;
+      const options = { userId, email, provider, providerInfo, verified };
+      const databaseDriver = new DatabaseDriver();
+      return databaseDriver.updateUser(options)
+        .then((result) => {
+          expect(rethinkdb.table).toBeCalledWith('users');
+          expect(rethinkdb.get).toBeCalledWith(userId);
+          expect(rethinkdb.row).toBeCalledWith('providers');
+          expect(rethinkdb.row).toBeCalledWith('emails');
+          expect(rethinkdb.setInsertRow).toBeCalledWith(email);
+          expect(rethinkdb.update).toBeCalledWith({
+            email,
+            emails: 'setInsert row',
+            providers: 'merge row',
+            verified,
+          });
+          const expectedMergeRow = {};
+          expectedMergeRow[provider] = providerInfo;
+          expect(rethinkdb.mergeRow).toBeCalledWith(expectedMergeRow);
+          expect(result)
+            .toBe('update');
+        });
     });
   });
 });
