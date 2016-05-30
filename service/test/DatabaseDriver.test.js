@@ -128,7 +128,7 @@ describe('DatabaseDriver', () => {
           throw new Error('This should have broken');
         })
         .catch((err) => {
-          expect(err)
+          expect(err.message)
             .toBe('Expecting parameters: email, provider, providerInfo, verified');
         });
     });
@@ -157,7 +157,7 @@ describe('DatabaseDriver', () => {
           throw new Error('This should have broken');
         })
         .catch((err) => {
-          expect(err)
+          expect(err.message)
             .toBe('Expecting parameters: a');
         });
     });
@@ -289,6 +289,23 @@ describe('DatabaseDriver', () => {
         .catch((err) => {
           expect(err.message)
             .toBe('at least one value must be set');
+        });
+    });
+
+    it('does not update if missing userId', () => {
+      const email = 'test@test.com';
+      const provider = 'google';
+      const providerInfo = { scope: 'email' };
+      const verified = true;
+      const options = { email, provider, providerInfo, verified };
+      const databaseDriver = new DatabaseDriver();
+      return databaseDriver.updateUser(options)
+        .then(() => {
+          throw new Error('This should have broken');
+        })
+        .catch((err) => {
+          expect(err.message)
+            .toBe('userId is a required parameter');
         });
     });
   });

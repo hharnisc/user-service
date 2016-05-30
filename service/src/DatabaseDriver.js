@@ -33,7 +33,7 @@ export default class DatabaseDriver {
   [HAS_ALL_KEYS](expectedKeys, options) {
     return new Promise((resolve, reject) => {
       if (!_.isEmpty(_.xor(expectedKeys, _.keys(options)))) {
-        reject(`Expecting parameters: ${expectedKeys.join(', ')}`);
+        reject(Error(`Expecting parameters: ${expectedKeys.join(', ')}`));
       } else {
         resolve();
       }
@@ -64,16 +64,23 @@ export default class DatabaseDriver {
 
   updateUser(options = {}) {
     const { userId, email, provider, providerInfo, verified } = options;
-    return new Promise((resolve) => {
-      const updateValue = {};
-      if (email) {
-        Object.assign(updateValue, {
-          email,
-          emails: rethinkdb.row('emails').setInsert(email),
-        });
+    return new Promise((resolve, reject) => {
+      if (userId) {
+        resolve();
+      } else {
+        reject(Error('userId is a required parameter'));
       }
-      resolve(updateValue);
     })
+      .then(() => {
+        const updateValue = {};
+        if (email) {
+          Object.assign(updateValue, {
+            email,
+            emails: rethinkdb.row('emails').setInsert(email),
+          });
+        }
+        return updateValue;
+      })
       .then((updateValue) => {
         if (provider || providerInfo) {
           if (provider && providerInfo) {
