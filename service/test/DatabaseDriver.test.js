@@ -338,4 +338,12 @@ describe('DatabaseDriver', () => {
         });
     });
   });
+
+  describe('addRole', () => {
+    it('does exist', () => {
+      const databaseDriver = new DatabaseDriver();
+      expect(databaseDriver.addRole)
+        .toBeDefined();
+    });
+  });
 });

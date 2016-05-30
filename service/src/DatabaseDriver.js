@@ -117,4 +117,8 @@ export default class DatabaseDriver {
           .run(this.connection)
       ));
   }
+
+  addRole() {
+
+  }
 }
