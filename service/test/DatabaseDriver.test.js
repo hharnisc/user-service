@@ -277,5 +277,19 @@ describe('DatabaseDriver', () => {
             .toBe('provider and providerInfo must both be set if either is specified');
         });
     });
+
+    pit('does not update if no values are set', () => {
+      const userId = 1;
+      const options = { userId };
+      const databaseDriver = new DatabaseDriver();
+      return databaseDriver.updateUser(options)
+        .then(() => {
+          throw new Error('This should have broken');
+        })
+        .catch((err) => {
+          expect(err.message)
+            .toBe('at least one value must be set');
+        });
+    });
   });
 });

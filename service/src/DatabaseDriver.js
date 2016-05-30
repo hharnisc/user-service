@@ -94,6 +94,12 @@ export default class DatabaseDriver {
         }
         return updateValue;
       })
+      .then((updateValue) => {
+        if (_.isEmpty(updateValue)) {
+          throw new Error('at least one value must be set');
+        }
+        return updateValue;
+      })
       .then((updateValue) => (
         rethinkdb
           .table(this.userTable)
