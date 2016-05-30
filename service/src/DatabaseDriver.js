@@ -64,17 +64,27 @@ export default class DatabaseDriver {
 
   updateUser(options = {}) {
     const { userId, email, provider, providerInfo, verified } = options;
-    const providerData = {};
-    providerData[provider] = providerInfo;
+    const updateValue = {};
+    if (email) {
+      Object.assign(updateValue, {
+        email,
+        emails: rethinkdb.row('emails').setInsert(email),
+      });
+    }
+    if (provider || providerInfo) {
+      const providerData = {};
+      providerData[provider] = providerInfo;
+      Object.assign(updateValue, {
+        providers: rethinkdb.row('providers').merge(providerData),
+      });
+    }
+    if (verified) {
+      Object.assign(updateValue, { verified });
+    }
     return rethinkdb
       .table(this.userTable)
       .get(userId)
-      .update({
-        email,
-        emails: rethinkdb.row('emails').setInsert(email),
-        providers: rethinkdb.row('providers').merge(providerData),
-        verified,
-      })
+      .update(updateValue)
       .run(this.connection);
   }
 }

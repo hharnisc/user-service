@@ -170,7 +170,7 @@ describe('DatabaseDriver', () => {
         .toBeDefined();
     });
 
-    pit('does update A user', () => {
+    pit('does update a user', () => {
       const userId = 1;
       const email = 'test@test.com';
       const provider = 'google';
@@ -190,6 +190,69 @@ describe('DatabaseDriver', () => {
             emails: 'setInsert row',
             providers: 'merge row',
             verified,
+          });
+          const expectedMergeRow = {};
+          expectedMergeRow[provider] = providerInfo;
+          expect(rethinkdb.mergeRow).toBeCalledWith(expectedMergeRow);
+          expect(rethinkdb.updateRun).toBeCalledWith(databaseDriver.connection);
+          expect(result)
+            .toBe('update');
+        });
+    });
+
+    pit('does update only an email address', () => {
+      const userId = 1;
+      const email = 'test@test.com';
+      const options = { userId, email };
+      const databaseDriver = new DatabaseDriver();
+      return databaseDriver.updateUser(options)
+        .then((result) => {
+          expect(rethinkdb.table).toBeCalledWith('users');
+          expect(rethinkdb.get).toBeCalledWith(userId);
+          expect(rethinkdb.row).toBeCalledWith('emails');
+          expect(rethinkdb.setInsertRow).toBeCalledWith(email);
+          expect(rethinkdb.update).toBeCalledWith({
+            email,
+            emails: 'setInsert row',
+          });
+          expect(rethinkdb.updateRun).toBeCalledWith(databaseDriver.connection);
+          expect(result)
+            .toBe('update');
+        });
+    });
+
+    pit('does update only verified', () => {
+      const userId = 1;
+      const verified = true;
+      const options = { userId, verified };
+      const databaseDriver = new DatabaseDriver();
+      return databaseDriver.updateUser(options)
+        .then((result) => {
+          expect(rethinkdb.table).toBeCalledWith('users');
+          expect(rethinkdb.get).toBeCalledWith(userId);
+          expect(rethinkdb.update).toBeCalledWith({
+            verified,
+          });
+          expect(rethinkdb.updateRun).toBeCalledWith(databaseDriver.connection);
+          expect(result)
+            .toBe('update');
+        });
+    });
+
+    pit('does update only provider and providerInfo', () => {
+      const userId = 1;
+      const provider = 'google';
+      const providerInfo = { scope: 'email' };
+      const options = { userId, provider, providerInfo };
+      const databaseDriver = new DatabaseDriver();
+      return databaseDriver.updateUser(options)
+        .then((result) => {
+          expect(rethinkdb.table).toBeCalledWith('users');
+          expect(rethinkdb.get).toBeCalledWith(userId);
+          expect(rethinkdb.row).toBeCalledWith('providers');
+          expect(rethinkdb.row).toBeCalledWith('emails');
+          expect(rethinkdb.update).toBeCalledWith({
+            providers: 'merge row',
           });
           const expectedMergeRow = {};
           expectedMergeRow[provider] = providerInfo;
