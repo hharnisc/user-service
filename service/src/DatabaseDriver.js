@@ -25,17 +25,9 @@ export default class DatabaseDriver {
   [INSERT](options = {}) {
     const table = options.table;
     const data = options.data;
-    return new Promise((resolve, reject) => {
-      rethinkdb.table(table)
-        .insert(data)
-        .run(this.connection, (err, result) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(result);
-          }
-        });
-    });
+    return rethinkdb.table(table)
+      .insert(data)
+      .run(this.connection);
   }
 
   [HAS_ALL_KEYS](expectedKeys, options) {
@@ -82,6 +74,7 @@ export default class DatabaseDriver {
         emails: rethinkdb.row('emails').setInsert(email),
         providers: rethinkdb.row('providers').merge(providerData),
         verified,
-      }).run(this.connection);
+      })
+      .run(this.connection);
   }
 }

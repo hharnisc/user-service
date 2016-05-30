@@ -80,7 +80,7 @@ describe('DatabaseDriver', () => {
       expect(result).toBe('result');
       expect(rethinkdb.table).toBeCalledWith(table);
       expect(rethinkdb.insert).toBeCalledWith(data);
-      expect(rethinkdb.run).toBeCalledWith(databaseDriver.connection, jasmine.any(Function));
+      expect(rethinkdb.run).toBeCalledWith(databaseDriver.connection);
     });
   });
 
@@ -115,7 +115,7 @@ describe('DatabaseDriver', () => {
         .then((result) => {
           expect(rethinkdb.table).toBeCalledWith('users');
           expect(rethinkdb.insert).toBeCalledWith(Object.assign({}, options, { emails: [email] }));
-          expect(rethinkdb.run).toBeCalledWith(databaseDriver.connection, jasmine.any(Function));
+          expect(rethinkdb.run).toBeCalledWith(databaseDriver.connection);
           expect(result)
             .toEqual('result');
         });
@@ -194,6 +194,7 @@ describe('DatabaseDriver', () => {
           const expectedMergeRow = {};
           expectedMergeRow[provider] = providerInfo;
           expect(rethinkdb.mergeRow).toBeCalledWith(expectedMergeRow);
+          expect(rethinkdb.updateRun).toBeCalledWith(databaseDriver.connection);
           expect(result)
             .toBe('update');
         });
