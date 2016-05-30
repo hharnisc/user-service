@@ -173,6 +173,7 @@ Creates a new user with a given email address, provider (facebook, twitter, goog
 - **email** - *string* - email address
 - **provider** - *string* - the provider the user was authenticated against (facebook, twitter, google, etc)
 - **providerInfo** - *object* - the data received from the provider
+- **roles** - *array* - a list of roles to apply to the user
 - **verified** - *boolean* - did the providerInfo come from a verified source?
 
 #### response

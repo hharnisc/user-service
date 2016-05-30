@@ -42,13 +42,14 @@ export default class DatabaseDriver {
 
   createUser(options = {}) {
     return this[HAS_ALL_KEYS](
-      ['email', 'provider', 'providerInfo', 'verified'],
+      ['email', 'provider', 'providerInfo', 'roles', 'verified'],
       options
     )
       .then(() => {
-        const { email, provider, providerInfo, verified } = options;
+        const { email, provider, providerInfo, roles, verified } = options;
         const emails = [email];
         const table = this.userTable;
+        const uniqueRoles = _.uniq(roles);
         return this[INSERT]({
           table,
           data: {
@@ -56,6 +57,7 @@ export default class DatabaseDriver {
             emails,
             provider,
             providerInfo,
+            roles: uniqueRoles,
             verified,
           },
         });

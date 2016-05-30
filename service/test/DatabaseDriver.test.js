@@ -3,6 +3,7 @@ jest.unmock('../src/symbols');
 jest.unmock('lodash');
 jest.mock('rethinkdb');
 import DatabaseDriver from '../src/DatabaseDriver';
+import _ from 'lodash';
 import {
   INSERT,
   HAS_ALL_KEYS,
@@ -109,12 +110,40 @@ describe('DatabaseDriver', () => {
         scope: ['email'],
       };
       const verified = true;
+      const roles = [];
       const databaseDriver = new DatabaseDriver();
-      const options = { email, provider, providerInfo, verified };
+      const options = { email, provider, providerInfo, roles, verified };
       return databaseDriver.createUser(options)
         .then((result) => {
           expect(rethinkdb.table).toBeCalledWith('users');
           expect(rethinkdb.insert).toBeCalledWith(Object.assign({}, options, { emails: [email] }));
+          expect(rethinkdb.run).toBeCalledWith(databaseDriver.connection);
+          expect(result)
+            .toEqual('result');
+        });
+    });
+
+    pit('does create a new user and de-dupe roles', () => {
+      const email = 'test@test.com';
+      const provider = 'google';
+      const providerInfo = {
+        userId: 1234,
+        scope: ['email'],
+      };
+      const verified = true;
+      const roles = ['a', 'a'];
+      const databaseDriver = new DatabaseDriver();
+      const options = { email, provider, providerInfo, roles, verified };
+      return databaseDriver.createUser(options)
+        .then((result) => {
+          expect(rethinkdb.table).toBeCalledWith('users');
+          expect(rethinkdb.insert).toBeCalledWith(
+            Object.assign(
+              {},
+              options,
+              { emails: [email] },
+              { roles: _.uniq(roles) }
+            ));
           expect(rethinkdb.run).toBeCalledWith(databaseDriver.connection);
           expect(result)
             .toEqual('result');
@@ -129,7 +158,7 @@ describe('DatabaseDriver', () => {
         })
         .catch((err) => {
           expect(err.message)
-            .toBe('Expecting parameters: email, provider, providerInfo, verified');
+            .toBe('Expecting parameters: email, provider, providerInfo, roles, verified');
         });
     });
   });
@@ -292,7 +321,7 @@ describe('DatabaseDriver', () => {
         });
     });
 
-    it('does not update if missing userId', () => {
+    pit('does not update if missing userId', () => {
       const email = 'test@test.com';
       const provider = 'google';
       const providerInfo = { scope: 'email' };
