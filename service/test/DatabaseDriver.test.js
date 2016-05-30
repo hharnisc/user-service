@@ -262,5 +262,20 @@ describe('DatabaseDriver', () => {
             .toBe('update');
         });
     });
+
+    pit('does not update if only provider is set', () => {
+      const userId = 1;
+      const provider = 'google';
+      const options = { userId, provider };
+      const databaseDriver = new DatabaseDriver();
+      return databaseDriver.updateUser(options)
+        .then(() => {
+          throw new Error('This should have broken');
+        })
+        .catch((err) => {
+          expect(err.message)
+            .toBe('provider and providerInfo must both be set if either is specified');
+        });
+    });
   });
 });

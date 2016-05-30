@@ -64,27 +64,42 @@ export default class DatabaseDriver {
 
   updateUser(options = {}) {
     const { userId, email, provider, providerInfo, verified } = options;
-    const updateValue = {};
-    if (email) {
-      Object.assign(updateValue, {
-        email,
-        emails: rethinkdb.row('emails').setInsert(email),
-      });
-    }
-    if (provider || providerInfo) {
-      const providerData = {};
-      providerData[provider] = providerInfo;
-      Object.assign(updateValue, {
-        providers: rethinkdb.row('providers').merge(providerData),
-      });
-    }
-    if (verified) {
-      Object.assign(updateValue, { verified });
-    }
-    return rethinkdb
-      .table(this.userTable)
-      .get(userId)
-      .update(updateValue)
-      .run(this.connection);
+    return new Promise((resolve) => {
+      const updateValue = {};
+      if (email) {
+        Object.assign(updateValue, {
+          email,
+          emails: rethinkdb.row('emails').setInsert(email),
+        });
+      }
+      resolve(updateValue);
+    })
+      .then((updateValue) => {
+        if (provider || providerInfo) {
+          if (provider && providerInfo) {
+            const providerData = {};
+            providerData[provider] = providerInfo;
+            Object.assign(updateValue, {
+              providers: rethinkdb.row('providers').merge(providerData),
+            });
+          } else {
+            throw new Error('provider and providerInfo must both be set if either is specified');
+          }
+        }
+        return updateValue;
+      })
+      .then((updateValue) => {
+        if (verified) {
+          Object.assign(updateValue, { verified });
+        }
+        return updateValue;
+      })
+      .then((updateValue) => (
+        rethinkdb
+          .table(this.userTable)
+          .get(userId)
+          .update(updateValue)
+          .run(this.connection)
+      ));
   }
 }
