@@ -346,7 +346,7 @@ describe('DatabaseDriver', () => {
         .toBeDefined();
     });
 
-    it('does add a role to a user', () => {
+    pit('does add a role to a user', () => {
       const userId = 1;
       const role = 'test';
       const options = { userId, role };
@@ -363,6 +363,18 @@ describe('DatabaseDriver', () => {
           expect(rethinkdb.updateRun).toBeCalledWith(databaseDriver.connection);
           expect(result)
             .toBe('update');
+        });
+    });
+
+    pit('does not add a role with missing options', () => {
+      const databaseDriver = new DatabaseDriver();
+      return databaseDriver.addRole({})
+        .then(() => {
+          throw new Error('This should have broken');
+        })
+        .catch((err) => {
+          expect(err.message)
+            .toBe('Expecting parameters: userId, role');
         });
     });
   });

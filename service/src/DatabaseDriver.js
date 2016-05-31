@@ -120,12 +120,18 @@ export default class DatabaseDriver {
 
   addRole(options = {}) {
     const { userId, role } = options;
-    return rethinkdb
-      .table(this.userTable)
-      .get(userId)
-      .update({
-        role: rethinkdb.row('roles').setInsert(role),
-      })
-      .run(this.connection);
+    return this[HAS_ALL_KEYS](
+      ['userId', 'role'],
+      options
+    )
+      .then(() => (
+        rethinkdb
+          .table(this.userTable)
+          .get(userId)
+          .update({
+            role: rethinkdb.row('roles').setInsert(role),
+          })
+          .run(this.connection)
+      ));
   }
 }
