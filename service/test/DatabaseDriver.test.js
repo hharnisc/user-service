@@ -345,5 +345,25 @@ describe('DatabaseDriver', () => {
       expect(databaseDriver.addRole)
         .toBeDefined();
     });
+
+    it('does add a role to a user', () => {
+      const userId = 1;
+      const role = 'test';
+      const options = { userId, role };
+      const databaseDriver = new DatabaseDriver();
+      return databaseDriver.addRole(options)
+        .then((result) => {
+          expect(rethinkdb.table).toBeCalledWith('users');
+          expect(rethinkdb.get).toBeCalledWith(userId);
+          expect(rethinkdb.row).toBeCalledWith('roles');
+          expect(rethinkdb.setInsertRow).toBeCalledWith(role);
+          expect(rethinkdb.update).toBeCalledWith({
+            role: 'setInsert row',
+          });
+          expect(rethinkdb.updateRun).toBeCalledWith(databaseDriver.connection);
+          expect(result)
+            .toBe('update');
+        });
+    });
   });
 });

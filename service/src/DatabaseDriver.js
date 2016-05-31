@@ -118,7 +118,14 @@ export default class DatabaseDriver {
       ));
   }
 
-  addRole() {
-
+  addRole(options = {}) {
+    const { userId, role } = options;
+    return rethinkdb
+      .table(this.userTable)
+      .get(userId)
+      .update({
+        role: rethinkdb.row('roles').setInsert(role),
+      })
+      .run(this.connection);
   }
 }
