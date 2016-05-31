@@ -34,9 +34,11 @@ rethinkdb.table = jest.fn().mockImplementation(() => ({
   get: rethinkdb.get,
 }));
 rethinkdb.mergeRow = jest.fn().mockImplementation(() => 'merge row');
+rethinkdb.setDifferenceRow = jest.fn().mockImplementation(() => 'setDifference row');
 rethinkdb.setInsertRow = jest.fn().mockImplementation(() => 'setInsert row');
 rethinkdb.row = jest.fn().mockImplementation(() => ({
   merge: rethinkdb.mergeRow,
   setInsert: rethinkdb.setInsertRow,
+  setDifference: rethinkdb.setDifferenceRow,
 }));
 module.exports = rethinkdb;

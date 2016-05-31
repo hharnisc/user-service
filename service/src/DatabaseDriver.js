@@ -135,7 +135,14 @@ export default class DatabaseDriver {
       ));
   }
 
-  removeRole() {
-
+  removeRole(options = {}) {
+    const { userId, role } = options;
+    return rethinkdb
+      .table(this.userTable)
+      .get(userId)
+      .update({
+        role: rethinkdb.row('roles').setDifference(role),
+      })
+      .run(this.connection);
   }
 }
