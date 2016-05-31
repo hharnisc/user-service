@@ -405,5 +405,17 @@ describe('DatabaseDriver', () => {
             .toBe('update');
         });
     });
+
+    pit('does not remove a role with missing options', () => {
+      const databaseDriver = new DatabaseDriver();
+      return databaseDriver.removeRole({})
+        .then(() => {
+          throw new Error('This should have broken');
+        })
+        .catch((err) => {
+          expect(err.message)
+            .toBe('Expecting parameters: userId, role');
+        });
+    });
   });
 });
