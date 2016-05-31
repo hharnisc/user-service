@@ -25,7 +25,8 @@ describe('Router', () => {
 
   it('does have a method to initialize routes', () => {
     const router = new Router();
-    expect(router[INIT_ROUTES]).toBeDefined();
+    expect(router[INIT_ROUTES])
+      .toBeDefined();
   });
 
   it('does handle /thetime route', (done) => {
@@ -39,8 +40,10 @@ describe('Router', () => {
     request(app)
       .get('/thetime')
       .expect((res) => {
-        expect(res.status).toEqual(200);
-        expect(res.body).toEqual({ time });
+        expect(res.status)
+          .toEqual(200);
+        expect(res.body)
+          .toEqual({ time });
       })
       .end(done);
   });
