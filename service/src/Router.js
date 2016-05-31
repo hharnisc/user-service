@@ -4,7 +4,8 @@ import {
 } from './symbols';
 
 export default class Router {
-  constructor() {
+  constructor(options = {}) {
+    this.dbDriver = options.dbDriver;
     this.router = new express.Router();
     this[INIT_ROUTES]();
   }

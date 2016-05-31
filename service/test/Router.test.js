@@ -16,6 +16,13 @@ describe('Router', () => {
     expect(Router).not.toEqual({});
   });
 
+  it('does initialize a Router with the DatabaseDriver', () => {
+    const dbDriver = 'some db driver';
+    const router = new Router({ dbDriver });
+    expect(router.dbDriver)
+      .toBe(dbDriver);
+  });
+
   it('does have a method to initialize routes', () => {
     const router = new Router();
     expect(router[INIT_ROUTES]).toBeDefined();
