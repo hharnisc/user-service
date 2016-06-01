@@ -16,7 +16,11 @@ rethinkdb.init = jest.fn().mockImplementation((config) =>
 );
 rethinkdb.run = jest.fn().mockImplementation(() => (
   new Promise((resolve) => {
-    resolve('result');
+    resolve({
+      changes: [{
+        new_val: 'result',
+      }],
+    });
   })
 ));
 rethinkdb.updateRun = jest.fn().mockImplementation(() => (

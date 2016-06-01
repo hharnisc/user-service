@@ -80,7 +80,7 @@ describe('DatabaseDriver', () => {
     databaseDriver[INSERT](options).then((result) => {
       expect(result).toBe('result');
       expect(rethinkdb.table).toBeCalledWith(table);
-      expect(rethinkdb.insert).toBeCalledWith(data);
+      expect(rethinkdb.insert).toBeCalledWith(data, { returnChanges: 'always' });
       expect(rethinkdb.run).toBeCalledWith(databaseDriver.connection);
     });
   });
@@ -116,7 +116,10 @@ describe('DatabaseDriver', () => {
       return databaseDriver.createUser(options)
         .then((result) => {
           expect(rethinkdb.table).toBeCalledWith('users');
-          expect(rethinkdb.insert).toBeCalledWith(Object.assign({}, options, { emails: [email] }));
+          expect(rethinkdb.insert).toBeCalledWith(
+            Object.assign({}, options, { emails: [email] }),
+            { returnChanges: 'always' }
+          );
           expect(rethinkdb.run).toBeCalledWith(databaseDriver.connection);
           expect(result)
             .toEqual('result');
@@ -143,7 +146,7 @@ describe('DatabaseDriver', () => {
               options,
               { emails: [email] },
               { roles: _.uniq(roles) }
-            ));
+            ), { returnChanges: 'always' });
           expect(rethinkdb.run).toBeCalledWith(databaseDriver.connection);
           expect(result)
             .toEqual('result');

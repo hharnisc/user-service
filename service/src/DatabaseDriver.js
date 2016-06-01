@@ -26,8 +26,9 @@ export default class DatabaseDriver {
     const table = options.table;
     const data = options.data;
     return rethinkdb.table(table)
-      .insert(data)
-      .run(this.connection);
+      .insert(data, { returnChanges: 'always' })
+      .run(this.connection)
+      .then((result) => result.changes[0].new_val);
   }
 
   [HAS_ALL_KEYS](expectedKeys, options) {
