@@ -14,5 +14,13 @@ export default class Router {
     this.router.get('/thetime', (req, res) => res.status(200).send({
       time: Date.now(),
     }));
+
+    this.router.post('/addrole', (req, res) => {
+      this.dbDriver.addRole({
+        userId: req.body.userId,
+        role: req.body.role,
+      })
+        .then((user) => res.status(200).send(user));
+    });
   }
 }
