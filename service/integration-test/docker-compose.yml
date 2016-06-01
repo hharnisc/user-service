@@ -2,7 +2,17 @@ integration-tester:
   build: .
   links:
     - user
+    - rethinkdb
 user:
   build: ../..
+  environment:
+    - RETHINKDB_SERVICE_HOST=rethinkdb
+    - RETHINKDB_SERVICE_PORT=28015
+  links:
+    - rethinkdb
   ports:
     - "8080:8080"
+rethinkdb:
+  image: rethinkdb
+  ports:
+    - "28015:28015"
