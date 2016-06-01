@@ -113,9 +113,10 @@ export default class DatabaseDriver {
         rethinkdb
           .table(this.userTable)
           .get(userId)
-          .update(updateValue)
+          .update(updateValue, { returnChanges: 'always' })
           .run(this.connection)
-      ));
+      ))
+      .then((result) => result.changes[0].new_val);
   }
 
   addRole(options = {}) {
@@ -130,9 +131,10 @@ export default class DatabaseDriver {
           .get(userId)
           .update({
             role: rethinkdb.row('roles').setInsert(role),
-          })
+          }, { returnChanges: 'always' })
           .run(this.connection)
-      ));
+      ))
+      .then((result) => result.changes[0].new_val);
   }
 
   removeRole(options = {}) {
@@ -147,8 +149,9 @@ export default class DatabaseDriver {
           .get(userId)
           .update({
             role: rethinkdb.row('roles').setDifference(role),
-          })
+          }, { returnChanges: 'always' })
           .run(this.connection)
-      ));
+      ))
+      .then((result) => result.changes[0].new_val);
   }
 }

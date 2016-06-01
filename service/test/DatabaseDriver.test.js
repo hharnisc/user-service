@@ -219,7 +219,7 @@ describe('DatabaseDriver', () => {
             emails: 'setInsert row',
             providers: 'merge row',
             verified,
-          });
+          }, { returnChanges: 'always' });
           const expectedMergeRow = {};
           expectedMergeRow[provider] = providerInfo;
           expect(rethinkdb.mergeRow).toBeCalledWith(expectedMergeRow);
@@ -243,7 +243,7 @@ describe('DatabaseDriver', () => {
           expect(rethinkdb.update).toBeCalledWith({
             email,
             emails: 'setInsert row',
-          });
+          }, { returnChanges: 'always' });
           expect(rethinkdb.updateRun).toBeCalledWith(databaseDriver.connection);
           expect(result)
             .toBe('update');
@@ -261,7 +261,7 @@ describe('DatabaseDriver', () => {
           expect(rethinkdb.get).toBeCalledWith(userId);
           expect(rethinkdb.update).toBeCalledWith({
             verified,
-          });
+          }, { returnChanges: 'always' });
           expect(rethinkdb.updateRun).toBeCalledWith(databaseDriver.connection);
           expect(result)
             .toBe('update');
@@ -282,7 +282,7 @@ describe('DatabaseDriver', () => {
           expect(rethinkdb.row).toBeCalledWith('emails');
           expect(rethinkdb.update).toBeCalledWith({
             providers: 'merge row',
-          });
+          }, { returnChanges: 'always' });
           const expectedMergeRow = {};
           expectedMergeRow[provider] = providerInfo;
           expect(rethinkdb.mergeRow).toBeCalledWith(expectedMergeRow);
@@ -359,7 +359,7 @@ describe('DatabaseDriver', () => {
           expect(rethinkdb.setInsertRow).toBeCalledWith(role);
           expect(rethinkdb.update).toBeCalledWith({
             role: 'setInsert row',
-          });
+          }, { returnChanges: 'always' });
           expect(rethinkdb.updateRun).toBeCalledWith(databaseDriver.connection);
           expect(result)
             .toBe('update');
@@ -399,7 +399,7 @@ describe('DatabaseDriver', () => {
           expect(rethinkdb.setDifferenceRow).toBeCalledWith(role);
           expect(rethinkdb.update).toBeCalledWith({
             role: 'setDifference row',
-          });
+          }, { returnChanges: 'always' });
           expect(rethinkdb.updateRun).toBeCalledWith(databaseDriver.connection);
           expect(result)
             .toBe('update');

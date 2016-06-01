@@ -148,7 +148,7 @@ Add a role to a user
 
 #### response
 
-200 - Empty
+- **user** - *object* - complete user object
 
 
 ### POST /v1/removerole
@@ -162,7 +162,7 @@ remove a role from a user
 
 #### response
 
-200 - Empty
+- **user** - *object* - complete user object
 
 ### POST /v1/create
 
