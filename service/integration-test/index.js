@@ -163,7 +163,6 @@ test('POST /v1/removerole', (t) => {
       })
     ))
       .then((response) => {
-        console.log('response.body', response.body);
         t.equal(response.statusCode, 200, 'has statusCode 200');
         t.deepEqual(
           response.body,
