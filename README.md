@@ -184,7 +184,7 @@ Creates a new user with a given email address, provider (facebook, twitter, goog
 
 Updates a user with a userId.
 
-All feilds except `id` are optional.
+All fields except `id` are optional.
 
 - `email` sets current email and appends to known emails if not seen yet
 - `provider` must be specified if `providerInfo` is set

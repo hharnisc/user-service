@@ -118,7 +118,10 @@ export default class DatabaseDriver {
           .update(updateValue, { returnChanges: 'always' })
           .run(this.connection)
       ))
-      .then((result) => result.changes[0].new_val);
+      .then((result) => {
+        console.log('result', result.changes[0].new_val);
+        return result.changes[0].new_val;
+      });
   }
 
   addRole(options = {}) {

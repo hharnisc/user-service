@@ -43,6 +43,7 @@ export default class Router {
 
     this.router.post('/update', (req, res) => {
       this.dbDriver.updateUser({
+        userId: req.body.userId,
         email: req.body.email,
         provider: req.body.provider,
         providerInfo: req.body.providerInfo,

@@ -14,6 +14,18 @@ test.createStream()
 const before = test;
 const after = test;
 
+const userData = {
+  email: 'test@test.com',
+  emails: ['test@test.com'],
+  providers: {
+    twitter: {
+      scope: 'write',
+    },
+  },
+  roles: ['read'],
+  verified: true,
+};
+
 let connection;
 let userId;
 const host = process.env.HOST || 'user';
@@ -44,7 +56,7 @@ const disconnectDB = () => {
 
 const populateDB = () => (
   rethinkdb.table('users')
-    .insert({ roles: ['read'] })
+    .insert(userData)
     .run(connection)
   .then((result) => {
     userId = result.generated_keys[0];
@@ -100,13 +112,7 @@ test('POST /v1/addrole', (t) => {
         t.equal(response.statusCode, 200, 'has statusCode 200');
         t.deepEqual(
           response.body,
-          {
-            id: userId,
-            roles: [
-              'read',
-              'test',
-            ],
-          },
+          Object.assign({}, userData, { id: userId, roles: ['read', 'test'] }),
           'response has expected user data'
         );
       })
@@ -115,13 +121,11 @@ test('POST /v1/addrole', (t) => {
           .get(userId)
           .run(connection)
           .then((user) => {
-            t.deepEqual(user, {
-              id: userId,
-              roles: [
-                'read',
-                'test',
-              ],
-            }, 'role added to database');
+            t.deepEqual(
+              user,
+              Object.assign({}, userData, { id: userId, roles: ['read', 'test'] }),
+              'role added to database'
+            );
           })
       ))
       .catch((error) => t.fail(error))
@@ -147,10 +151,7 @@ test('POST /v1/removerole', (t) => {
         t.equal(response.statusCode, 200, 'has statusCode 200');
         t.deepEqual(
           response.body,
-          {
-            id: userId,
-            roles: [],
-          },
+          Object.assign({}, userData, { id: userId, roles: [] }),
           'response has expected user data'
         );
       })
@@ -159,10 +160,11 @@ test('POST /v1/removerole', (t) => {
           .get(userId)
           .run(connection)
           .then((user) => {
-            t.deepEqual(user, {
-              id: userId,
-              roles: [],
-            }, 'role deleted from database');
+            t.deepEqual(
+              user,
+              Object.assign({}, userData, { id: userId, roles: [] }),
+              'role deleted from database'
+            );
           })
       ))
       .catch((error) => t.fail(error))
@@ -222,6 +224,67 @@ test('POST /v1/create', (t) => {
               roles,
               verified,
             }, 'created new user in database');
+          })
+      ))
+      .catch((error) => t.fail(error))
+      .then(() => resetDB())
+      .then(() => t.end());
+});
+
+test('POST /v1/update', (t) => {
+  const email = 'test@test.com';
+  const provider = 'google';
+  const providerInfo = {
+    scope: 'email',
+    name: 'tester',
+  };
+  const verified = true;
+  populateDB()
+    .then(() => (
+      requestPromise({
+        method: 'POST',
+        body: {
+          userId,
+          email,
+          provider,
+          providerInfo,
+          verified,
+        },
+        uri: `http://${host}:${port}/v1/update`,
+        json: true,
+        resolveWithFullResponse: true,
+      })
+    ))
+      .then((response) => {
+        t.equal(response.statusCode, 200, 'has statusCode 200');
+        t.equal(response.body.id, userId, 'response has expected id');
+        t.equal(response.body.email, email, 'response has expected email');
+        t.deepEqual(response.body.emails, [email], 'response has expected emails');
+        t.deepEqual(
+          response.body.providers,
+          {
+            google: providerInfo,
+            twitter: { scope: 'write' },
+          },
+          'response has expected providers'
+        );
+        t.deepEqual(response.body.roles, ['read'], 'response has expected roles');
+        t.equal(response.body.verified, verified, 'response has expected verified');
+      })
+      .then(() => (
+        rethinkdb.table('users')
+          .get(userId)
+          .run(connection)
+          .then((user) => {
+            t.deepEqual(user,
+            Object.assign({}, userData, {
+              id: userId,
+              providers: {
+                google: providerInfo,
+                twitter: { scope: 'write' },
+              },
+            }),
+            'updated new user in database');
           })
       ))
       .catch((error) => t.fail(error))
