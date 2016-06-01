@@ -44,5 +44,15 @@ export default class Router {
         .then((user) => res.status(200).send(user))
         .catch((error) => res.status(400).send({ error }));
     });
+
+    this.router.post('/update', (req, res) => {
+      this.dbDriver.update({
+        email: req.body.email,
+        provider: req.body.provider,
+        providerInfo: req.body.providerInfo,
+        verified: req.body.verified,
+      })
+        .then((user) => res.status(200).send(user));
+    });
   }
 }
