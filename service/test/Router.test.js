@@ -109,4 +109,36 @@ describe('Router', () => {
         .end(done);
     });
   });
+
+  describe('/removerole', () => {
+    it('does handle route', (done) => {
+      const userId = 1;
+      const role = 'read';
+      const dbDriver = {
+        removeRole: jest.fn().mockImplementation(() => new Promise((resolve) => resolve({
+          userId,
+        }))),
+      };
+      const router = new Router({ dbDriver });
+      const app = express();
+      app.use(bodyParser.json());
+      app.use(bodyParser.urlencoded({ extended: true }));
+      app.use(router.router);
+      request(app)
+        .post('/removerole')
+        .send({
+          userId,
+          role,
+        })
+        .expect((res) => {
+          expect(res.status)
+            .toEqual(200);
+          expect(res.body)
+            .toEqual({
+              userId,
+            });
+        })
+        .end(done);
+    });
+  });
 });
