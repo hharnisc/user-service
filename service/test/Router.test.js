@@ -209,6 +209,7 @@ describe('Router', () => {
         })
         .end(done);
     });
+
     it('does handle errors', (done) => {
       const email = 'test@test.com';
       const provider = 'twitter';
@@ -241,6 +242,49 @@ describe('Router', () => {
             .toEqual(400);
           expect(res.body)
             .toEqual({ error });
+        })
+        .end(done);
+    });
+
+    it('does set default args on roles and verified', (done) => {
+      const email = 'test@test.com';
+      const provider = 'twitter';
+      const providerInfo = {
+        handle: 'test',
+        scope: 'read',
+      };
+      const dbDriver = {
+        create: jest.fn().mockImplementation(() => new Promise((resolve) => resolve({
+          email,
+        }))),
+      };
+      const router = new Router({ dbDriver });
+      const app = express();
+      app.use(bodyParser.json());
+      app.use(bodyParser.urlencoded({ extended: true }));
+      app.use(router.router);
+      request(app)
+        .post('/create')
+        .send({
+          email,
+          provider,
+          providerInfo,
+        })
+        .expect((res) => {
+          expect(res.status)
+            .toEqual(200);
+          expect(res.body)
+            .toEqual({
+              email,
+            });
+          expect(dbDriver.create)
+            .toBeCalledWith({
+              email,
+              provider,
+              providerInfo,
+              roles: [],
+              verified: false,
+            });
         })
         .end(done);
     });
