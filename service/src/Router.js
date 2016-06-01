@@ -30,7 +30,7 @@ export default class Router {
     });
 
     this.router.post('/create', (req, res) => {
-      this.dbDriver.create({
+      this.dbDriver.createUser({
         email: req.body.email,
         provider: req.body.provider,
         providerInfo: req.body.providerInfo,
@@ -42,7 +42,7 @@ export default class Router {
     });
 
     this.router.post('/update', (req, res) => {
-      this.dbDriver.update({
+      this.dbDriver.updateUser({
         email: req.body.email,
         provider: req.body.provider,
         providerInfo: req.body.providerInfo,

@@ -50,14 +50,15 @@ export default class DatabaseDriver {
         const { email, provider, providerInfo, roles, verified } = options;
         const emails = [email];
         const table = this.userTable;
+        const providers = {};
+        providers[provider] = providerInfo;
         const uniqueRoles = _.uniq(roles);
         return this[INSERT]({
           table,
           data: {
             email,
             emails,
-            provider,
-            providerInfo,
+            providers,
             roles: uniqueRoles,
             verified,
           },

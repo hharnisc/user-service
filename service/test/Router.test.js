@@ -162,7 +162,7 @@ describe('Router', () => {
       const roles = ['admin'];
       const verified = true;
       const dbDriver = {
-        create: jest.fn().mockImplementation(() => new Promise((resolve) => resolve({
+        createUser: jest.fn().mockImplementation(() => new Promise((resolve) => resolve({
           email,
         }))),
       };
@@ -202,7 +202,8 @@ describe('Router', () => {
       const verified = true;
       const error = 'some error';
       const dbDriver = {
-        create: jest.fn().mockImplementation(() => new Promise((resolve, reject) => reject(error))),
+        createUser: jest.fn().mockImplementation(() =>
+          new Promise((resolve, reject) => reject(error))),
       };
       const router = new Router({ dbDriver });
       const app = express();
@@ -235,7 +236,7 @@ describe('Router', () => {
         scope: 'read',
       };
       const dbDriver = {
-        create: jest.fn().mockImplementation(() => new Promise((resolve) => resolve({
+        createUser: jest.fn().mockImplementation(() => new Promise((resolve) => resolve({
           email,
         }))),
       };
@@ -258,7 +259,7 @@ describe('Router', () => {
             .toEqual({
               email,
             });
-          expect(dbDriver.create)
+          expect(dbDriver.createUser)
             .toBeCalledWith({
               email,
               provider,
@@ -281,7 +282,7 @@ describe('Router', () => {
       };
       const verified = true;
       const dbDriver = {
-        update: jest.fn().mockImplementation(() => new Promise((resolve) => resolve({
+        updateUser: jest.fn().mockImplementation(() => new Promise((resolve) => resolve({
           email,
         }))),
       };
@@ -319,7 +320,8 @@ describe('Router', () => {
       const verified = true;
       const error = 'some error';
       const dbDriver = {
-        update: jest.fn().mockImplementation(() => new Promise((resolve, reject) => reject(error))),
+        updateUser: jest.fn().mockImplementation(() =>
+          new Promise((resolve, reject) => reject(error))),
       };
       const router = new Router({ dbDriver });
       const app = express();

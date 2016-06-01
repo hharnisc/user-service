@@ -113,11 +113,18 @@ describe('DatabaseDriver', () => {
       const roles = [];
       const databaseDriver = new DatabaseDriver();
       const options = { email, provider, providerInfo, roles, verified };
+      const expectedInsertOptions = {
+        email,
+        emails: [email],
+        providers: { google: providerInfo },
+        roles,
+        verified,
+      };
       return databaseDriver.createUser(options)
         .then((result) => {
           expect(rethinkdb.table).toBeCalledWith('users');
           expect(rethinkdb.insert).toBeCalledWith(
-            Object.assign({}, options, { emails: [email] }),
+            expectedInsertOptions,
             { returnChanges: 'always' }
           );
           expect(rethinkdb.run).toBeCalledWith(databaseDriver.connection);
@@ -137,16 +144,20 @@ describe('DatabaseDriver', () => {
       const roles = ['a', 'a'];
       const databaseDriver = new DatabaseDriver();
       const options = { email, provider, providerInfo, roles, verified };
+      const expectedInsertOptions = {
+        email,
+        emails: [email],
+        providers: { google: providerInfo },
+        roles: _.uniq(roles),
+        verified,
+      };
       return databaseDriver.createUser(options)
         .then((result) => {
           expect(rethinkdb.table).toBeCalledWith('users');
           expect(rethinkdb.insert).toBeCalledWith(
-            Object.assign(
-              {},
-              options,
-              { emails: [email] },
-              { roles: _.uniq(roles) }
-            ), { returnChanges: 'always' });
+            expectedInsertOptions,
+            { returnChanges: 'always' }
+          );
           expect(rethinkdb.run).toBeCalledWith(databaseDriver.connection);
           expect(result)
             .toEqual('result');

@@ -170,6 +170,64 @@ test('POST /v1/removerole', (t) => {
       .then(() => t.end());
 });
 
+test('POST /v1/create', (t) => {
+  const email = 'test@test.com';
+  const provider = 'google';
+  const providerInfo = {
+    scope: 'email',
+    name: 'tester',
+  };
+  const roles = ['admin'];
+  const verified = true;
+  populateDB()
+    .then(() => (
+      requestPromise({
+        method: 'POST',
+        body: {
+          email,
+          provider,
+          providerInfo,
+          roles,
+          verified,
+        },
+        uri: `http://${host}:${port}/v1/create`,
+        json: true,
+        resolveWithFullResponse: true,
+      })
+    ))
+      .then((response) => {
+        t.equal(response.statusCode, 200, 'has statusCode 200');
+        t.notEqual(response.body.id, undefined, 'response has expected id');
+        t.equal(response.body.email, email, 'response has expected email');
+        t.deepEqual(response.body.emails, [email], 'response has expected emails');
+        t.deepEqual(
+          response.body.providers,
+          { google: providerInfo },
+          'response has expected providers'
+        );
+        t.deepEqual(response.body.roles, roles, 'response has expected roles');
+        t.equal(response.body.verified, verified, 'response has expected verified');
+        return response.body.id;
+      })
+      .then((id) => (
+        rethinkdb.table('users')
+          .get(id)
+          .run(connection)
+          .then((user) => {
+            t.deepEqual(user, {
+              id,
+              email,
+              emails: [email],
+              providers: { google: providerInfo },
+              roles,
+              verified,
+            }, 'created new user in database');
+          })
+      ))
+      .catch((error) => t.fail(error))
+      .then(() => resetDB())
+      .then(() => t.end());
+});
 
 after('after', (t) => {
   disconnectDB();
