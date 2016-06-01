@@ -140,13 +140,56 @@ test('POST /v1/addrole', (t) => {
                 'read',
                 'test',
               ],
-            }, 'refreshToken deleted from database');
+            }, 'role added to database');
           })
       ))
       .catch((error) => t.fail(error))
       .then(() => resetDB())
       .then(() => t.end());
 });
+
+test('POST /v1/removerole', (t) => {
+  populateDB()
+    .then(() => (
+      requestPromise({
+        method: 'POST',
+        body: {
+          userId,
+          role: 'read',
+        },
+        uri: `http://${host}:${port}/v1/removerole`,
+        json: true,
+        resolveWithFullResponse: true,
+      })
+    ))
+      .then((response) => {
+        console.log('response.body', response.body);
+        t.equal(response.statusCode, 200, 'has statusCode 200');
+        t.deepEqual(
+          response.body,
+          {
+            id: userId,
+            roles: [],
+          },
+          'response has expected user data'
+        );
+      })
+      .then(() => (
+        rethinkdb.table('users')
+          .get(userId)
+          .run(connection)
+          .then((user) => {
+            t.deepEqual(user, {
+              id: userId,
+              roles: [],
+            }, 'role deleted from database');
+          })
+      ))
+      .catch((error) => t.fail(error))
+      .then(() => resetDB())
+      .then(() => t.end());
+});
+
 
 after('after', (t) => {
   disconnectDB();

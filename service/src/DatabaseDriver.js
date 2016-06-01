@@ -149,7 +149,7 @@ export default class DatabaseDriver {
           .table(this.userTable)
           .get(userId)
           .update({
-            roles: rethinkdb.row('roles').setDifference(role),
+            roles: rethinkdb.row('roles').setDifference([role]),
           }, { returnChanges: 'always' })
           .run(this.connection)
       ))

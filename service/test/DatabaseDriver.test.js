@@ -399,7 +399,7 @@ describe('DatabaseDriver', () => {
           expect(rethinkdb.table).toBeCalledWith('users');
           expect(rethinkdb.get).toBeCalledWith(userId);
           expect(rethinkdb.row).toBeCalledWith('roles');
-          expect(rethinkdb.setDifferenceRow).toBeCalledWith(role);
+          expect(rethinkdb.setDifferenceRow).toBeCalledWith([role]);
           expect(rethinkdb.update).toBeCalledWith({
             roles: 'setDifference row',
           }, { returnChanges: 'always' });
