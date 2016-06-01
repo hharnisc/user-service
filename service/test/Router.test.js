@@ -169,4 +169,45 @@ describe('Router', () => {
         .end(done);
     });
   });
+
+  describe('/create', () => {
+    it('does handle route', (done) => {
+      const email = 'test@test.com';
+      const provider = 'twitter';
+      const providerInfo = {
+        handle: 'test',
+        scope: 'read',
+      };
+      const roles = ['admin'];
+      const verified = true;
+      const dbDriver = {
+        create: jest.fn().mockImplementation(() => new Promise((resolve) => resolve({
+          email,
+        }))),
+      };
+      const router = new Router({ dbDriver });
+      const app = express();
+      app.use(bodyParser.json());
+      app.use(bodyParser.urlencoded({ extended: true }));
+      app.use(router.router);
+      request(app)
+        .post('/create')
+        .send({
+          email,
+          provider,
+          providerInfo,
+          roles,
+          verified,
+        })
+        .expect((res) => {
+          expect(res.status)
+            .toEqual(200);
+          expect(res.body)
+            .toEqual({
+              email,
+            });
+        })
+        .end(done);
+    });
+  });
 });
