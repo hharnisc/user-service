@@ -41,7 +41,8 @@ export default class Router {
         roles: req.body.roles,
         verified: req.body.verified,
       })
-        .then((user) => res.status(200).send(user));
+        .then((user) => res.status(200).send(user))
+        .catch((error) => res.status(400).send({ error }));
     });
   }
 }
