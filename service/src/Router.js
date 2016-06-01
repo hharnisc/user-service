@@ -29,7 +29,8 @@ export default class Router {
         userId: req.body.userId,
         role: req.body.role,
       })
-        .then((user) => res.status(200).send(user));
+        .then((user) => res.status(200).send(user))
+        .catch((error) => res.status(400).send({ error }));
     });
   }
 }

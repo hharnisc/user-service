@@ -140,5 +140,33 @@ describe('Router', () => {
         })
         .end(done);
     });
+
+    it('does handle errors', (done) => {
+      const userId = 1;
+      const role = 'read';
+      const error = 'some error';
+      const dbDriver = {
+        removeRole: jest.fn().mockImplementation(() =>
+          new Promise((resolve, reject) => reject(error))),
+      };
+      const router = new Router({ dbDriver });
+      const app = express();
+      app.use(bodyParser.json());
+      app.use(bodyParser.urlencoded({ extended: true }));
+      app.use(router.router);
+      request(app)
+        .post('/removerole')
+        .send({
+          userId,
+          role,
+        })
+        .expect((res) => {
+          expect(res.status)
+            .toEqual(400);
+          expect(res.body)
+            .toEqual({ error });
+        })
+        .end(done);
+    });
   });
 });
