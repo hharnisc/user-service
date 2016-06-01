@@ -361,7 +361,7 @@ describe('DatabaseDriver', () => {
           expect(rethinkdb.row).toBeCalledWith('roles');
           expect(rethinkdb.setInsertRow).toBeCalledWith(role);
           expect(rethinkdb.update).toBeCalledWith({
-            role: 'setInsert row',
+            roles: 'setInsert row',
           }, { returnChanges: 'always' });
           expect(rethinkdb.updateRun).toBeCalledWith(databaseDriver.connection);
           expect(result)
@@ -401,7 +401,7 @@ describe('DatabaseDriver', () => {
           expect(rethinkdb.row).toBeCalledWith('roles');
           expect(rethinkdb.setDifferenceRow).toBeCalledWith(role);
           expect(rethinkdb.update).toBeCalledWith({
-            role: 'setDifference row',
+            roles: 'setDifference row',
           }, { returnChanges: 'always' });
           expect(rethinkdb.updateRun).toBeCalledWith(databaseDriver.connection);
           expect(result)
