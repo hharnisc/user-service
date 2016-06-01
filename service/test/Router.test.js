@@ -327,5 +327,39 @@ describe('Router', () => {
         })
         .end(done);
     });
+
+    it('does handle errors', (done) => {
+      const email = 'test@test.com';
+      const provider = 'twitter';
+      const providerInfo = {
+        handle: 'test',
+        scope: 'read',
+      };
+      const verified = true;
+      const error = 'some error';
+      const dbDriver = {
+        update: jest.fn().mockImplementation(() => new Promise((resolve, reject) => reject(error))),
+      };
+      const router = new Router({ dbDriver });
+      const app = express();
+      app.use(bodyParser.json());
+      app.use(bodyParser.urlencoded({ extended: true }));
+      app.use(router.router);
+      request(app)
+        .post('/update')
+        .send({
+          email,
+          provider,
+          providerInfo,
+          verified,
+        })
+        .expect((res) => {
+          expect(res.status)
+            .toEqual(400);
+          expect(res.body)
+            .toEqual({ error });
+        })
+        .end(done);
+    });
   });
 });
