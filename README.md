@@ -2,8 +2,6 @@
 
 [![Build Status](https://travis-ci.org/hharnisc/user-service.svg?branch=master)](https://travis-ci.org/hharnisc/user-service)
 
-**NOTE: this is a work in progress**
-
 A user management service
 
 ## Table Of Contents
