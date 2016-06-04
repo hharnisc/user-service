@@ -121,6 +121,20 @@ export default class DatabaseDriver {
       .then((result) => result.changes[0].new_val);
   }
 
+  getUser(options = {}) {
+    const { userId } = options;
+    return this[HAS_ALL_KEYS](
+      ['userId'],
+      options
+    )
+      .then(() => (
+        rethinkdb
+          .table(this.userTable)
+          .get(userId)
+          .run(this.connection)
+      ));
+  }
+
   addRole(options = {}) {
     const { userId, role } = options;
     return this[HAS_ALL_KEYS](

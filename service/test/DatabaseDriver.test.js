@@ -432,4 +432,37 @@ describe('DatabaseDriver', () => {
         });
     });
   });
+
+  describe('getUser', () => {
+    it('exists', () => {
+      const databaseDriver = new DatabaseDriver();
+      expect(databaseDriver.getUser)
+        .toBeDefined();
+    });
+
+    it('gets an existing user', () => {
+      const userId = 1;
+      const databaseDriver = new DatabaseDriver();
+      return databaseDriver.getUser({ userId })
+        .then((result) => {
+          expect(rethinkdb.table).toBeCalledWith('users');
+          expect(rethinkdb.get).toBeCalledWith(userId);
+          expect(rethinkdb.getRun).toBeCalledWith(databaseDriver.connection);
+          expect(result)
+            .toBe('get');
+        });
+    });
+
+    it('does not get user when missing userId param', () => {
+      const databaseDriver = new DatabaseDriver();
+      return databaseDriver.getUser()
+        .then(() => {
+          throw new Error('This should have broken');
+        })
+        .catch((err) => {
+          expect(err.message)
+            .toBe('Expecting parameters: userId');
+        });
+    });
+  });
 });

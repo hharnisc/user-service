@@ -32,10 +32,16 @@ rethinkdb.updateRun = jest.fn().mockImplementation(() => (
     });
   })
 ));
+rethinkdb.getRun = jest.fn().mockImplementation(() => (
+  new Promise((resolve) => {
+    resolve('get');
+  })
+));
 rethinkdb.insert = jest.fn().mockImplementation(() => ({ run: rethinkdb.run }));
 rethinkdb.update = jest.fn().mockImplementation(() => ({ run: rethinkdb.updateRun }));
 rethinkdb.get = jest.fn().mockImplementation(() => ({
   update: rethinkdb.update,
+  run: rethinkdb.getRun,
 }));
 rethinkdb.table = jest.fn().mockImplementation(() => ({
   insert: rethinkdb.insert,
