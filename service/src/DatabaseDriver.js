@@ -48,6 +48,9 @@ export default class DatabaseDriver {
     )
       .then(() => {
         const { email, provider, providerInfo, roles, verified } = options;
+        if (!verified) {
+          throw new Error('Unverified users aren\'t supported yet');
+        }
         const emails = [email];
         const table = this.userTable;
         const providers = {};
@@ -100,7 +103,10 @@ export default class DatabaseDriver {
         return updateValue;
       })
       .then((updateValue) => {
-        if (verified) {
+        if (verified !== undefined) {
+          if (!verified) {
+            throw new Error('Unverified users aren\'t supported yet');
+          }
           Object.assign(updateValue, { verified });
         }
         return updateValue;

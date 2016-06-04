@@ -133,6 +133,27 @@ describe('DatabaseDriver', () => {
         });
     });
 
+    pit('does not allow creating unverified users', () => {
+      const email = 'test@test.com';
+      const provider = 'google';
+      const providerInfo = {
+        userId: 1234,
+        scope: ['email'],
+      };
+      const verified = false;
+      const roles = ['a'];
+      const databaseDriver = new DatabaseDriver();
+      const options = { email, provider, providerInfo, roles, verified };
+      return databaseDriver.createUser(options)
+        .then(() => {
+          throw new Error('This should have broken');
+        })
+        .catch((err) => {
+          expect(err.message)
+            .toBe('Unverified users aren\'t supported yet');
+        });
+    });
+
     pit('does create a new user and de-dupe roles', () => {
       const email = 'test@test.com';
       const provider = 'google';
@@ -349,6 +370,21 @@ describe('DatabaseDriver', () => {
         .catch((err) => {
           expect(err.message)
             .toBe('userId is a required parameter');
+        });
+    });
+
+    pit('does not update if unverified user', () => {
+      const userId = 1;
+      const verified = false;
+      const options = { userId, verified };
+      const databaseDriver = new DatabaseDriver();
+      return databaseDriver.updateUser(options)
+        .then(() => {
+          throw new Error('This should have broken');
+        })
+        .catch((err) => {
+          expect(err.message)
+            .toBe('Unverified users aren\'t supported yet');
         });
     });
   });
