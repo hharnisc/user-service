@@ -205,3 +205,15 @@ Object.assign(existing, updated)
 #### response
 
 - **user** - *object* - complete user object
+
+### GET /v1/get
+
+Get's a user from the database, returns null if not found
+
+#### request
+
+- **userId** - *string* - a user to find
+
+#### response
+
+- **user** - *object or null* - complete user object or null

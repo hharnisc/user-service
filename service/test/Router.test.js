@@ -345,4 +345,63 @@ describe('Router', () => {
         .end(done);
     });
   });
+
+  describe('/get', () => {
+    it('does handle route', (done) => {
+      const userId = 1;
+      const user = {
+        human: true,
+      };
+      const dbDriver = {
+        getUser: jest.fn().mockImplementation(() => new Promise((resolve) => resolve(user))),
+      };
+      const router = new Router({ dbDriver });
+      const app = express();
+      app.use(bodyParser.json());
+      app.use(bodyParser.urlencoded({ extended: true }));
+      app.use(router.router);
+      request(app)
+        .get('/get')
+        .send({
+          userId,
+        })
+        .expect((res) => {
+          expect(res.status)
+            .toEqual(200);
+          expect(res.body)
+            .toEqual(user);
+          expect(dbDriver.getUser)
+            .toBeCalledWith({
+              userId,
+            });
+        })
+        .end(done);
+    });
+
+    it('does handle errors', (done) => {
+      const userId = 1;
+      const error = 'some error';
+      const dbDriver = {
+        getUser: jest.fn().mockImplementation(() =>
+          new Promise((resolve, reject) => reject(error))),
+      };
+      const router = new Router({ dbDriver });
+      const app = express();
+      app.use(bodyParser.json());
+      app.use(bodyParser.urlencoded({ extended: true }));
+      app.use(router.router);
+      request(app)
+        .get('/get')
+        .send({
+          userId,
+        })
+        .expect((res) => {
+          expect(res.status)
+            .toEqual(400);
+          expect(res.body)
+            .toEqual({ error });
+        })
+        .end(done);
+    });
+  });
 });

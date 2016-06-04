@@ -52,5 +52,13 @@ export default class Router {
         .then((user) => res.status(200).send(user))
         .catch((error) => res.status(400).send({ error }));
     });
+
+    this.router.get('/get', (req, res) => {
+      this.dbDriver.getUser({
+        userId: req.body.userId,
+      })
+        .then((user) => res.status(200).send(user))
+        .catch((error) => res.status(400).send({ error }));
+    });
   }
 }
