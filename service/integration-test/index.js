@@ -292,6 +292,34 @@ test('POST /v1/update', (t) => {
       .then(() => t.end());
 });
 
+test('GET /v1/get', (t) => {
+  populateDB()
+    .then(() => (
+      requestPromise({
+        method: 'GET',
+        body: {
+          userId,
+        },
+        uri: `http://${host}:${port}/v1/get`,
+        json: true,
+        resolveWithFullResponse: true,
+      })
+    ))
+      .then((response) => {
+        t.equal(response.statusCode, 200, 'has statusCode 200');
+        t.deepEqual(
+          response.body,
+          Object.assign({}, userData, {
+            id: userId,
+          }),
+          'response has expected user data'
+        );
+      })
+      .catch((error) => t.fail(error))
+      .then(() => resetDB())
+      .then(() => t.end());
+});
+
 after('after', (t) => {
   disconnectDB();
   t.pass('Disconnected from DB');
