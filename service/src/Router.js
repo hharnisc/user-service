@@ -35,7 +35,6 @@ export default class Router {
         provider: req.body.provider,
         providerInfo: req.body.providerInfo,
         roles: req.body.roles || [],
-        verified: req.body.verified || false,
       })
         .then((user) => res.status(200).send(user))
         .catch((error) => res.status(400).send({ error }));
@@ -47,7 +46,6 @@ export default class Router {
         email: req.body.email,
         provider: req.body.provider,
         providerInfo: req.body.providerInfo,
-        verified: req.body.verified,
       })
         .then((user) => res.status(200).send(user))
         .catch((error) => res.status(400).send({ error }));

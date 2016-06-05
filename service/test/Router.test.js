@@ -160,7 +160,6 @@ describe('Router', () => {
         scope: 'read',
       };
       const roles = ['admin'];
-      const verified = true;
       const dbDriver = {
         createUser: jest.fn().mockImplementation(() => new Promise((resolve) => resolve({
           email,
@@ -178,7 +177,6 @@ describe('Router', () => {
           provider,
           providerInfo,
           roles,
-          verified,
         })
         .expect((res) => {
           expect(res.status)
@@ -199,7 +197,6 @@ describe('Router', () => {
         scope: 'read',
       };
       const roles = ['admin'];
-      const verified = true;
       const error = 'some error';
       const dbDriver = {
         createUser: jest.fn().mockImplementation(() =>
@@ -217,7 +214,6 @@ describe('Router', () => {
           provider,
           providerInfo,
           roles,
-          verified,
         })
         .expect((res) => {
           expect(res.status)
@@ -228,7 +224,7 @@ describe('Router', () => {
         .end(done);
     });
 
-    it('does set default args on roles and verified', (done) => {
+    it('does set default args on roles', (done) => {
       const email = 'test@test.com';
       const provider = 'twitter';
       const providerInfo = {
@@ -265,7 +261,6 @@ describe('Router', () => {
               provider,
               providerInfo,
               roles: [],
-              verified: false,
             });
         })
         .end(done);
@@ -280,7 +275,6 @@ describe('Router', () => {
         handle: 'test',
         scope: 'read',
       };
-      const verified = true;
       const dbDriver = {
         updateUser: jest.fn().mockImplementation(() => new Promise((resolve) => resolve({
           email,
@@ -297,7 +291,6 @@ describe('Router', () => {
           email,
           provider,
           providerInfo,
-          verified,
         })
         .expect((res) => {
           expect(res.status)
@@ -317,7 +310,6 @@ describe('Router', () => {
         handle: 'test',
         scope: 'read',
       };
-      const verified = true;
       const error = 'some error';
       const dbDriver = {
         updateUser: jest.fn().mockImplementation(() =>
@@ -334,7 +326,6 @@ describe('Router', () => {
           email,
           provider,
           providerInfo,
-          verified,
         })
         .expect((res) => {
           expect(res.status)

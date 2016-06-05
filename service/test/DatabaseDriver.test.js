@@ -109,16 +109,14 @@ describe('DatabaseDriver', () => {
         userId: 1234,
         scope: ['email'],
       };
-      const verified = true;
       const roles = [];
       const databaseDriver = new DatabaseDriver();
-      const options = { email, provider, providerInfo, roles, verified };
+      const options = { email, provider, providerInfo, roles };
       const expectedInsertOptions = {
         email,
         emails: [email],
         providers: { google: providerInfo },
         roles,
-        verified,
       };
       return databaseDriver.createUser(options)
         .then((result) => {
@@ -133,27 +131,6 @@ describe('DatabaseDriver', () => {
         });
     });
 
-    pit('does not allow creating unverified users', () => {
-      const email = 'test@test.com';
-      const provider = 'google';
-      const providerInfo = {
-        userId: 1234,
-        scope: ['email'],
-      };
-      const verified = false;
-      const roles = ['a'];
-      const databaseDriver = new DatabaseDriver();
-      const options = { email, provider, providerInfo, roles, verified };
-      return databaseDriver.createUser(options)
-        .then(() => {
-          throw new Error('This should have broken');
-        })
-        .catch((err) => {
-          expect(err.message)
-            .toBe('Unverified users aren\'t supported yet');
-        });
-    });
-
     pit('does create a new user and de-dupe roles', () => {
       const email = 'test@test.com';
       const provider = 'google';
@@ -161,16 +138,14 @@ describe('DatabaseDriver', () => {
         userId: 1234,
         scope: ['email'],
       };
-      const verified = true;
       const roles = ['a', 'a'];
       const databaseDriver = new DatabaseDriver();
-      const options = { email, provider, providerInfo, roles, verified };
+      const options = { email, provider, providerInfo, roles };
       const expectedInsertOptions = {
         email,
         emails: [email],
         providers: { google: providerInfo },
         roles: _.uniq(roles),
-        verified,
       };
       return databaseDriver.createUser(options)
         .then((result) => {
@@ -193,7 +168,7 @@ describe('DatabaseDriver', () => {
         })
         .catch((err) => {
           expect(err.message)
-            .toBe('Expecting parameters: email, provider, providerInfo, roles, verified');
+            .toBe('Expecting parameters: email, provider, providerInfo, roles');
         });
     });
   });
@@ -239,8 +214,7 @@ describe('DatabaseDriver', () => {
       const email = 'test@test.com';
       const provider = 'google';
       const providerInfo = { scope: 'email' };
-      const verified = true;
-      const options = { userId, email, provider, providerInfo, verified };
+      const options = { userId, email, provider, providerInfo };
       const databaseDriver = new DatabaseDriver();
       return databaseDriver.updateUser(options)
         .then((result) => {
@@ -253,7 +227,6 @@ describe('DatabaseDriver', () => {
             email,
             emails: 'setInsert row',
             providers: 'merge row',
-            verified,
           }, { returnChanges: 'always' });
           const expectedMergeRow = {};
           expectedMergeRow[provider] = providerInfo;
@@ -278,24 +251,6 @@ describe('DatabaseDriver', () => {
           expect(rethinkdb.update).toBeCalledWith({
             email,
             emails: 'setInsert row',
-          }, { returnChanges: 'always' });
-          expect(rethinkdb.updateRun).toBeCalledWith(databaseDriver.connection);
-          expect(result)
-            .toBe('update');
-        });
-    });
-
-    pit('does update only verified', () => {
-      const userId = 1;
-      const verified = true;
-      const options = { userId, verified };
-      const databaseDriver = new DatabaseDriver();
-      return databaseDriver.updateUser(options)
-        .then((result) => {
-          expect(rethinkdb.table).toBeCalledWith('users');
-          expect(rethinkdb.get).toBeCalledWith(userId);
-          expect(rethinkdb.update).toBeCalledWith({
-            verified,
           }, { returnChanges: 'always' });
           expect(rethinkdb.updateRun).toBeCalledWith(databaseDriver.connection);
           expect(result)
@@ -360,8 +315,7 @@ describe('DatabaseDriver', () => {
       const email = 'test@test.com';
       const provider = 'google';
       const providerInfo = { scope: 'email' };
-      const verified = true;
-      const options = { email, provider, providerInfo, verified };
+      const options = { email, provider, providerInfo };
       const databaseDriver = new DatabaseDriver();
       return databaseDriver.updateUser(options)
         .then(() => {
@@ -370,21 +324,6 @@ describe('DatabaseDriver', () => {
         .catch((err) => {
           expect(err.message)
             .toBe('userId is a required parameter');
-        });
-    });
-
-    pit('does not update if unverified user', () => {
-      const userId = 1;
-      const verified = false;
-      const options = { userId, verified };
-      const databaseDriver = new DatabaseDriver();
-      return databaseDriver.updateUser(options)
-        .then(() => {
-          throw new Error('This should have broken');
-        })
-        .catch((err) => {
-          expect(err.message)
-            .toBe('Unverified users aren\'t supported yet');
         });
     });
   });

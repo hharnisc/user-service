@@ -23,7 +23,6 @@ const userData = {
     },
   },
   roles: ['read'],
-  verified: true,
 };
 
 let connection;
@@ -180,7 +179,6 @@ test('POST /v1/create', (t) => {
     name: 'tester',
   };
   const roles = ['admin'];
-  const verified = true;
   populateDB()
     .then(() => (
       requestPromise({
@@ -190,7 +188,6 @@ test('POST /v1/create', (t) => {
           provider,
           providerInfo,
           roles,
-          verified,
         },
         uri: `http://${host}:${port}/v1/create`,
         json: true,
@@ -208,7 +205,6 @@ test('POST /v1/create', (t) => {
           'response has expected providers'
         );
         t.deepEqual(response.body.roles, roles, 'response has expected roles');
-        t.equal(response.body.verified, verified, 'response has expected verified');
         return response.body.id;
       })
       .then((id) => (
@@ -222,7 +218,6 @@ test('POST /v1/create', (t) => {
               emails: [email],
               providers: { google: providerInfo },
               roles,
-              verified,
             }, 'created new user in database');
           })
       ))
@@ -238,7 +233,6 @@ test('POST /v1/update', (t) => {
     scope: 'email',
     name: 'tester',
   };
-  const verified = true;
   populateDB()
     .then(() => (
       requestPromise({
@@ -248,7 +242,6 @@ test('POST /v1/update', (t) => {
           email,
           provider,
           providerInfo,
-          verified,
         },
         uri: `http://${host}:${port}/v1/update`,
         json: true,
@@ -269,7 +262,6 @@ test('POST /v1/update', (t) => {
           'response has expected providers'
         );
         t.deepEqual(response.body.roles, ['read'], 'response has expected roles');
-        t.equal(response.body.verified, verified, 'response has expected verified');
       })
       .then(() => (
         rethinkdb.table('users')

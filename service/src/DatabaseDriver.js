@@ -43,14 +43,11 @@ export default class DatabaseDriver {
 
   createUser(options = {}) {
     return this[HAS_ALL_KEYS](
-      ['email', 'provider', 'providerInfo', 'roles', 'verified'],
+      ['email', 'provider', 'providerInfo', 'roles'],
       options
     )
       .then(() => {
-        const { email, provider, providerInfo, roles, verified } = options;
-        if (!verified) {
-          throw new Error('Unverified users aren\'t supported yet');
-        }
+        const { email, provider, providerInfo, roles } = options;
         const emails = [email];
         const table = this.userTable;
         const providers = {};
@@ -63,14 +60,13 @@ export default class DatabaseDriver {
             emails,
             providers,
             roles: uniqueRoles,
-            verified,
           },
         });
       });
   }
 
   updateUser(options = {}) {
-    const { userId, email, provider, providerInfo, verified } = options;
+    const { userId, email, provider, providerInfo } = options;
     return new Promise((resolve, reject) => {
       if (userId) {
         resolve();
@@ -99,15 +95,6 @@ export default class DatabaseDriver {
           } else {
             throw new Error('provider and providerInfo must both be set if either is specified');
           }
-        }
-        return updateValue;
-      })
-      .then((updateValue) => {
-        if (verified !== undefined) {
-          if (!verified) {
-            throw new Error('Unverified users aren\'t supported yet');
-          }
-          Object.assign(updateValue, { verified });
         }
         return updateValue;
       })
