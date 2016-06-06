@@ -39,14 +39,22 @@ rethinkdb.getRun = jest.fn().mockImplementation(() => (
 ));
 rethinkdb.limitRun = jest.fn().mockImplementation(() => (
   new Promise((resolve) => {
-    resolve([{
-      human: 'yes',
-    }]);
+    resolve({
+      toArray: () => (
+        [{
+          human: 'yes',
+        }]
+      ),
+    });
   })
 ));
 rethinkdb.limitRunEmpty = jest.fn().mockImplementation(() => (
   new Promise((resolve) => {
-    resolve([]);
+    resolve({
+      toArray: () => (
+        []
+      ),
+    });
   })
 ));
 rethinkdb.insert = jest.fn().mockImplementation(() => ({ run: rethinkdb.run }));

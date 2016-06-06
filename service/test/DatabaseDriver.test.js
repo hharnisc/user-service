@@ -430,7 +430,8 @@ describe('DatabaseDriver', () => {
             .toBeCalledWith('contains row');
           expect(rethinkdb.limit)
             .toBeCalledWith(1);
-          expect(rethinkdb.limitRun).toBeCalledWith(databaseDriver.connection);
+          expect(rethinkdb.limitRun)
+            .toBeCalledWith(databaseDriver.connection);
           expect(result)
             .toEqual({ human: 'yes' });
         });
@@ -451,7 +452,8 @@ describe('DatabaseDriver', () => {
             .toBeCalledWith('empty');
           expect(rethinkdb.limitEmpty)
             .toBeCalledWith(1);
-          expect(rethinkdb.limitRunEmpty).toBeCalledWith(databaseDriver.connection);
+          expect(rethinkdb.limitRunEmpty)
+            .toBeCalledWith(databaseDriver.connection);
           expect(result)
             .toEqual(null);
         });

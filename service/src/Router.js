@@ -17,7 +17,7 @@ export default class Router {
         role: req.body.role,
       })
         .then((user) => res.status(200).send(user))
-        .catch((error) => res.status(400).send({ error }));
+        .catch((error) => res.status(400).send({ error: error.message }));
     });
 
     this.router.post('/removerole', (req, res) => {
@@ -26,7 +26,7 @@ export default class Router {
         role: req.body.role,
       })
         .then((user) => res.status(200).send(user))
-        .catch((error) => res.status(400).send({ error }));
+        .catch((error) => res.status(400).send({ error: error.message }));
     });
 
     this.router.post('/create', (req, res) => {
@@ -37,7 +37,7 @@ export default class Router {
         roles: req.body.roles || [],
       })
         .then((user) => res.status(200).send(user))
-        .catch((error) => res.status(400).send({ error }));
+        .catch((error) => res.status(400).send({ error: error.message }));
     });
 
     this.router.post('/update', (req, res) => {
@@ -48,15 +48,15 @@ export default class Router {
         providerInfo: req.body.providerInfo,
       })
         .then((user) => res.status(200).send(user))
-        .catch((error) => res.status(400).send({ error }));
+        .catch((error) => res.status(400).send({ error: error.message }));
     });
 
     this.router.get('/get', (req, res) => {
       this.dbDriver.getUser({
-        userId: req.body.userId,
+        email: req.body.email,
       })
         .then((user) => res.status(200).send(user))
-        .catch((error) => res.status(400).send({ error }));
+        .catch((error) => res.status(400).send({ error: error.message }));
     });
   }
 }

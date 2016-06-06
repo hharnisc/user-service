@@ -290,7 +290,7 @@ test('GET /v1/get', (t) => {
       requestPromise({
         method: 'GET',
         body: {
-          userId,
+          email: userData.email,
         },
         uri: `http://${host}:${port}/v1/get`,
         json: true,

@@ -126,10 +126,11 @@ export default class DatabaseDriver {
           .filter(rethinkdb.row('emails').contains(email))
           .limit(1)
           .run(this.connection)
+          .then((cursor) => cursor.toArray())
       ))
-      .then((user) => {
-        if (user.length) {
-          return user[0];
+      .then((users) => {
+        if (users.length) {
+          return users[0];
         }
         return null;
       });

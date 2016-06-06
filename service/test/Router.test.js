@@ -68,7 +68,7 @@ describe('Router', () => {
       const error = 'some error';
       const dbDriver = {
         addRole: jest.fn().mockImplementation(() =>
-          new Promise((resolve, reject) => reject(error))),
+          new Promise((resolve, reject) => reject(Error(error)))),
       };
       const router = new Router({ dbDriver });
       const app = express();
@@ -128,7 +128,7 @@ describe('Router', () => {
       const error = 'some error';
       const dbDriver = {
         removeRole: jest.fn().mockImplementation(() =>
-          new Promise((resolve, reject) => reject(error))),
+          new Promise((resolve, reject) => reject(Error(error)))),
       };
       const router = new Router({ dbDriver });
       const app = express();
@@ -200,7 +200,7 @@ describe('Router', () => {
       const error = 'some error';
       const dbDriver = {
         createUser: jest.fn().mockImplementation(() =>
-          new Promise((resolve, reject) => reject(error))),
+          new Promise((resolve, reject) => reject(Error(error)))),
       };
       const router = new Router({ dbDriver });
       const app = express();
@@ -313,7 +313,7 @@ describe('Router', () => {
       const error = 'some error';
       const dbDriver = {
         updateUser: jest.fn().mockImplementation(() =>
-          new Promise((resolve, reject) => reject(error))),
+          new Promise((resolve, reject) => reject(Error(error)))),
       };
       const router = new Router({ dbDriver });
       const app = express();
@@ -339,7 +339,7 @@ describe('Router', () => {
 
   describe('/get', () => {
     it('does handle route', (done) => {
-      const userId = 1;
+      const email = 'test@gmail.com';
       const user = {
         human: true,
       };
@@ -354,7 +354,7 @@ describe('Router', () => {
       request(app)
         .get('/get')
         .send({
-          userId,
+          email,
         })
         .expect((res) => {
           expect(res.status)
@@ -363,18 +363,18 @@ describe('Router', () => {
             .toEqual(user);
           expect(dbDriver.getUser)
             .toBeCalledWith({
-              userId,
+              email,
             });
         })
         .end(done);
     });
 
     it('does handle errors', (done) => {
-      const userId = 1;
+      const email = 'notExisting@gmail.com';
       const error = 'some error';
       const dbDriver = {
         getUser: jest.fn().mockImplementation(() =>
-          new Promise((resolve, reject) => reject(error))),
+          new Promise((resolve, reject) => reject(Error(error)))),
       };
       const router = new Router({ dbDriver });
       const app = express();
@@ -384,7 +384,7 @@ describe('Router', () => {
       request(app)
         .get('/get')
         .send({
-          userId,
+          email,
         })
         .expect((res) => {
           expect(res.status)
