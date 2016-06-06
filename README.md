@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/hharnisc/user-service.svg?branch=master)](https://travis-ci.org/hharnisc/user-service)
 
-A user management service
+A user management service, for verified users
 
 ## Table Of Contents
 
@@ -164,7 +164,7 @@ remove a role from a user
 
 ### POST /v1/create
 
-Creates a new user with a given email address, provider (facebook, twitter, google etc) and if they've come from a verified source.
+Creates a new user with a given email address, provider (facebook, twitter, google etc).
 
 #### request
 
@@ -172,7 +172,6 @@ Creates a new user with a given email address, provider (facebook, twitter, goog
 - **provider** - *string* - the provider the user was authenticated against (facebook, twitter, google, etc)
 - **providerInfo** - *object* - the data received from the provider
 - **roles** - *array* - a list of roles to apply to the user
-- **verified** - *boolean* - did the providerInfo come from a verified source?
 
 #### response
 
@@ -192,15 +191,12 @@ All fields except `id` are optional.
 Object.assign(existing, updated)
 ```
 
-- `verified` can be flipped between true/false
-
 #### request
 
 - **id** - *string* - user id to update
 - **email** - *string* - (optional) email address
 - **provider** - *string* - (optional) the provider the user was authenticated against (facebook, twitter, google, etc)
 - **providerInfo** - *object* - (optional) the data received from the provider
-- **verified** - *boolean* - (optional) did the providerInfo come from a verified source?
 
 #### response
 
@@ -208,11 +204,11 @@ Object.assign(existing, updated)
 
 ### GET /v1/get
 
-Get's a user from the database, returns null if not found
+Gets a user from the database with their email address, returns null if not found.
 
 #### request
 
-- **userId** - *string* - a user to find
+- **email** - *string* - email address, could be a previously used email address
 
 #### response
 

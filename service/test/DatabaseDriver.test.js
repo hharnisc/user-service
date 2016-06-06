@@ -416,15 +416,23 @@ describe('DatabaseDriver', () => {
     });
 
     it('gets an existing user', () => {
-      const userId = 1;
+      const email = 'test@gmail.com';
       const databaseDriver = new DatabaseDriver();
-      return databaseDriver.getUser({ userId })
+      return databaseDriver.getUser({ email })
         .then((result) => {
-          expect(rethinkdb.table).toBeCalledWith('users');
-          expect(rethinkdb.get).toBeCalledWith(userId);
-          expect(rethinkdb.getRun).toBeCalledWith(databaseDriver.connection);
+          expect(rethinkdb.table)
+            .toBeCalledWith('users');
+          expect(rethinkdb.row)
+            .toBeCalledWith('emails');
+          expect(rethinkdb.containsRow)
+            .toBeCalledWith(email);
+          expect(rethinkdb.filter)
+            .toBeCalledWith('contains row');
+          expect(rethinkdb.limit)
+            .toBeCalledWith(1);
+          expect(rethinkdb.limitRun).toBeCalledWith(databaseDriver.connection);
           expect(result)
-            .toBe('get');
+            .toEqual({ human: 'yes' });
         });
     });
 
@@ -436,7 +444,7 @@ describe('DatabaseDriver', () => {
         })
         .catch((err) => {
           expect(err.message)
-            .toBe('Expecting parameters: userId');
+            .toBe('Expecting parameters: email');
         });
     });
   });

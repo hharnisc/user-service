@@ -115,17 +115,24 @@ export default class DatabaseDriver {
   }
 
   getUser(options = {}) {
-    const { userId } = options;
+    const { email } = options;
     return this[HAS_ALL_KEYS](
-      ['userId'],
+      ['email'],
       options
     )
       .then(() => (
         rethinkdb
           .table(this.userTable)
-          .get(userId)
+          .filter(rethinkdb.row('emails').contains(email))
+          .limit(1)
           .run(this.connection)
-      ));
+      ))
+      .then((user) => {
+        if (user.length) {
+          return user[0];
+        }
+        return null;
+      });
   }
 
   addRole(options = {}) {
