@@ -44,6 +44,11 @@ rethinkdb.limitRun = jest.fn().mockImplementation(() => (
     }]);
   })
 ));
+rethinkdb.limitRunEmpty = jest.fn().mockImplementation(() => (
+  new Promise((resolve) => {
+    resolve([]);
+  })
+));
 rethinkdb.insert = jest.fn().mockImplementation(() => ({ run: rethinkdb.run }));
 rethinkdb.update = jest.fn().mockImplementation(() => ({ run: rethinkdb.updateRun }));
 rethinkdb.get = jest.fn().mockImplementation(() => ({
@@ -51,7 +56,14 @@ rethinkdb.get = jest.fn().mockImplementation(() => ({
   run: rethinkdb.getRun,
 }));
 rethinkdb.limit = jest.fn().mockImplementation(() => ({ run: rethinkdb.limitRun }));
-rethinkdb.filter = jest.fn().mockImplementation(() => ({ limit: rethinkdb.limit }));
+rethinkdb.limitEmpty = jest.fn().mockImplementation(() => ({ run: rethinkdb.limitRunEmpty }));
+rethinkdb.filter = jest.fn().mockImplementation((filterOptions) => {
+  if (filterOptions === 'empty') {
+    return { limit: rethinkdb.limitEmpty };
+  }
+  return { limit: rethinkdb.limit };
+});
+rethinkdb.filterEmpty = jest.fn().mockImplementation(() => ({ limit: rethinkdb.limitEmpty }));
 rethinkdb.table = jest.fn().mockImplementation(() => ({
   insert: rethinkdb.insert,
   get: rethinkdb.get,
@@ -60,7 +72,12 @@ rethinkdb.table = jest.fn().mockImplementation(() => ({
 rethinkdb.mergeRow = jest.fn().mockImplementation(() => 'merge row');
 rethinkdb.setDifferenceRow = jest.fn().mockImplementation(() => 'setDifference row');
 rethinkdb.setInsertRow = jest.fn().mockImplementation(() => 'setInsert row');
-rethinkdb.containsRow = jest.fn().mockImplementation(() => 'contains row');
+rethinkdb.containsRow = jest.fn().mockImplementation((arg) => {
+  if (arg === 'null@gmail.com') {
+    return 'empty';
+  }
+  return 'contains row';
+});
 rethinkdb.row = jest.fn().mockImplementation(() => ({
   merge: rethinkdb.mergeRow,
   setInsert: rethinkdb.setInsertRow,

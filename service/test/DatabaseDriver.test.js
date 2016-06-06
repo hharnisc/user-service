@@ -436,6 +436,27 @@ describe('DatabaseDriver', () => {
         });
     });
 
+    it('returns null for non-existent user', () => {
+      const email = 'null@gmail.com';
+      const databaseDriver = new DatabaseDriver();
+      return databaseDriver.getUser({ email })
+        .then((result) => {
+          expect(rethinkdb.table)
+            .toBeCalledWith('users');
+          expect(rethinkdb.row)
+            .toBeCalledWith('emails');
+          expect(rethinkdb.containsRow)
+            .toBeCalledWith(email);
+          expect(rethinkdb.filter)
+            .toBeCalledWith('empty');
+          expect(rethinkdb.limitEmpty)
+            .toBeCalledWith(1);
+          expect(rethinkdb.limitRunEmpty).toBeCalledWith(databaseDriver.connection);
+          expect(result)
+            .toEqual(null);
+        });
+    });
+
     it('does not get user when missing userId param', () => {
       const databaseDriver = new DatabaseDriver();
       return databaseDriver.getUser()
