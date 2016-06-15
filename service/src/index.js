@@ -38,7 +38,7 @@ dbDriver.init()
     app.use('/', healthRouter);
     app.use(errorLogger);
     app.listen(argv.port);
-    logger.info(`Auth service started on port ${argv.port}`);
+    logger.info(`User service started on port ${argv.port}`);
   })
   .catch((error) => {
     logger.error('Error while connecting to database', {
