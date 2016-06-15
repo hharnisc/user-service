@@ -8,6 +8,7 @@ services:
       - rethinkdb
   user:
     build: ../..
+    command: npm start -- --port 8080
     environment:
       - RETHINKDB_SERVICE_HOST=rethinkdb
       - RETHINKDB_SERVICE_PORT=28015
