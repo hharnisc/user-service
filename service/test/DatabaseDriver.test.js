@@ -112,11 +112,15 @@ describe('DatabaseDriver', () => {
       const roles = [];
       const databaseDriver = new DatabaseDriver();
       const options = { email, provider, providerInfo, roles };
+      const date = 1234;
+      Date.now = jest.genMockFunction().mockReturnValue(date);
       const expectedInsertOptions = {
         email,
         emails: [email],
         providers: { google: providerInfo },
         roles,
+        createdAt: date,
+        updatedAt: date,
       };
       return databaseDriver.createUser(options)
         .then((result) => {
@@ -141,11 +145,15 @@ describe('DatabaseDriver', () => {
       const roles = ['a', 'a'];
       const databaseDriver = new DatabaseDriver();
       const options = { email, provider, providerInfo, roles };
+      const date = 1234;
+      Date.now = jest.genMockFunction().mockReturnValue(date);
       const expectedInsertOptions = {
         email,
         emails: [email],
         providers: { google: providerInfo },
         roles: _.uniq(roles),
+        createdAt: date,
+        updatedAt: date,
       };
       return databaseDriver.createUser(options)
         .then((result) => {
@@ -215,6 +223,8 @@ describe('DatabaseDriver', () => {
       const provider = 'google';
       const providerInfo = { scope: 'email' };
       const options = { userId, email, provider, providerInfo };
+      const date = 1234;
+      Date.now = jest.genMockFunction().mockReturnValue(date);
       const databaseDriver = new DatabaseDriver();
       return databaseDriver.updateUser(options)
         .then((result) => {
@@ -227,6 +237,7 @@ describe('DatabaseDriver', () => {
             email,
             emails: 'setInsert row',
             providers: 'merge row',
+            updatedAt: date,
           }, { returnChanges: 'always' });
           const expectedMergeRow = {};
           expectedMergeRow[provider] = providerInfo;
@@ -241,6 +252,8 @@ describe('DatabaseDriver', () => {
       const userId = 1;
       const email = 'test@test.com';
       const options = { userId, email };
+      const date = 1234;
+      Date.now = jest.genMockFunction().mockReturnValue(date);
       const databaseDriver = new DatabaseDriver();
       return databaseDriver.updateUser(options)
         .then((result) => {
@@ -251,6 +264,7 @@ describe('DatabaseDriver', () => {
           expect(rethinkdb.update).toBeCalledWith({
             email,
             emails: 'setInsert row',
+            updatedAt: date,
           }, { returnChanges: 'always' });
           expect(rethinkdb.updateRun).toBeCalledWith(databaseDriver.connection);
           expect(result)
@@ -263,6 +277,8 @@ describe('DatabaseDriver', () => {
       const provider = 'google';
       const providerInfo = { scope: 'email' };
       const options = { userId, provider, providerInfo };
+      const date = 1234;
+      Date.now = jest.genMockFunction().mockReturnValue(date);
       const databaseDriver = new DatabaseDriver();
       return databaseDriver.updateUser(options)
         .then((result) => {
@@ -272,6 +288,7 @@ describe('DatabaseDriver', () => {
           expect(rethinkdb.row).toBeCalledWith('emails');
           expect(rethinkdb.update).toBeCalledWith({
             providers: 'merge row',
+            updatedAt: date,
           }, { returnChanges: 'always' });
           const expectedMergeRow = {};
           expectedMergeRow[provider] = providerInfo;

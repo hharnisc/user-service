@@ -14,6 +14,8 @@ test.createStream()
 const before = test;
 const after = test;
 
+const createdAt = Date.now();
+const updatedAt = createdAt;
 const userData = {
   email: 'test@test.com',
   emails: ['test@test.com'],
@@ -23,6 +25,8 @@ const userData = {
     },
   },
   roles: ['read'],
+  createdAt,
+  updatedAt,
 };
 
 let connection;
@@ -84,7 +88,7 @@ before('before', (t) => {
       }
     });
   };
-  return retryPromise({ max: 5, backoff: 1000 }, healthCheck)
+  return retryPromise({ max: 5, backoff: 10000 }, healthCheck)
     .then(() => connectDB())
     .then(() => {
       t.pass('Connect To SUT and Database');
@@ -197,6 +201,12 @@ test('POST /v1/create', (t) => {
       .then((response) => {
         t.equal(response.statusCode, 200, 'has statusCode 200');
         t.notEqual(response.body.id, undefined, 'response has expected id');
+        t.notEqual(response.body.createdAt, undefined, 'response has expected createdAt');
+        t.equal(
+          response.body.updatedAt,
+          response.body.createdAt,
+          'response has expected updatedAt'
+        );
         t.equal(response.body.email, email, 'response has expected email');
         t.deepEqual(response.body.emails, [email], 'response has expected emails');
         t.deepEqual(
@@ -212,13 +222,20 @@ test('POST /v1/create', (t) => {
           .get(id)
           .run(connection)
           .then((user) => {
-            t.deepEqual(user, {
-              id,
-              email,
-              emails: [email],
-              providers: { google: providerInfo },
-              roles,
-            }, 'created new user in database');
+            t.deepEqual(
+              Object.assign({}, user, { createdAt: undefined, updatedAt: undefined }),
+              {
+                id,
+                email,
+                emails: [email],
+                providers: { google: providerInfo },
+                roles,
+                createdAt: undefined,
+                updatedAt: undefined,
+              },
+              'created new user in database');
+            t.notEqual(user.createdAt, undefined, 'createdAt is defined');
+            t.equal(user.createdAt, user.updatedAt, 'createdAt === updatedAt');
           })
       ))
       .catch((error) => t.fail(error))
@@ -251,6 +268,13 @@ test('POST /v1/update', (t) => {
       .then((response) => {
         t.equal(response.statusCode, 200, 'has statusCode 200');
         t.equal(response.body.id, userId, 'response has expected id');
+        t.equal(response.body.createdAt, createdAt, 'response has expected createdAt');
+        t.equal(
+          response.body.createdAt < response.body.updatedAt,
+          true,
+          'response has expected updateAt'
+        );
+        t.equal(response.body.id, userId, 'response has expected id');
         t.equal(response.body.email, email, 'response has expected email');
         t.deepEqual(response.body.emails, [email], 'response has expected emails');
         t.deepEqual(
@@ -268,15 +292,20 @@ test('POST /v1/update', (t) => {
           .get(userId)
           .run(connection)
           .then((user) => {
-            t.deepEqual(user,
+            t.deepEqual(
+            Object.assign({}, user, { createdAt: undefined, updatedAt: undefined }),
             Object.assign({}, userData, {
               id: userId,
               providers: {
                 google: providerInfo,
                 twitter: { scope: 'write' },
               },
+              createdAt: undefined,
+              updatedAt: undefined,
             }),
             'updated new user in database');
+            t.notEqual(user.updatedAt, undefined, 'updatedAt is defined');
+            t.equal(user.createdAt < user.updatedAt, true, 'createdAt < updatedAt');
           })
       ))
       .catch((error) => t.fail(error))

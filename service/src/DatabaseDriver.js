@@ -53,6 +53,7 @@ export default class DatabaseDriver {
         const providers = {};
         providers[provider] = providerInfo;
         const uniqueRoles = _.uniq(roles);
+        const now = Date.now();
         return this[INSERT]({
           table,
           data: {
@@ -60,6 +61,8 @@ export default class DatabaseDriver {
             emails,
             providers,
             roles: uniqueRoles,
+            createdAt: now,
+            updatedAt: now,
           },
         });
       });
@@ -108,7 +111,10 @@ export default class DatabaseDriver {
         rethinkdb
           .table(this.userTable)
           .get(userId)
-          .update(updateValue, { returnChanges: 'always' })
+          .update(
+            Object.assign(updateValue, { updatedAt: Date.now() }),
+            { returnChanges: 'always' }
+          )
           .run(this.connection)
       ))
       .then((result) => result.changes[0].new_val);
